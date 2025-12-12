@@ -198,12 +198,12 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (_tourStep) {
       case 0:
         title = 'Stories';
-        description = 'اخبار و اعلان‌های مهم هستن اینها';
+        description = 'These are important news and notifications';
         targetKey = _storiesKey;
         break;
       case 1:
         title = 'Your Apps';
-        description = 'اینجا برنامه‌های شما را نشان می‌دهد';
+        description = 'This shows your apps here';
         targetKey = _welcomeKey;
         break;
       case 2:
@@ -274,7 +274,14 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, constraints) {
             return Stack(
               children: [
-                // Highlight area
+                // Dark overlay with cutout for highlight
+                GestureDetector(
+                  onTap: () {}, // Prevent dismiss on tap
+                  child: Container(
+                    color: Colors.black.withOpacity(0.7),
+                  ),
+                ),
+                // Highlight area (cutout effect)
                 Positioned(
                   left: position.dx - 8.w,
                   top: position.dy - 8.h,
@@ -319,6 +326,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             title,
@@ -327,6 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontWeight: FontWeight.bold,
                               color: const Color(0xFF9C88FF),
                             ),
+                            textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 8.h),
                           Text(
@@ -701,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ] else ...[
                                     SizedBox(height: 12.h),
                                     Text(
-                                      'در حال کار کردن روشه',
+                                      'Processing...',
                                       style: TextStyle(
                                         fontSize: 12.sp,
                                         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
@@ -754,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'برای شروع یک برنامه رو اپلود کنید',
+                                      'Upload a file to get started',
                                       style: TextStyle(
                                         fontSize: 12.sp,
                                         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),

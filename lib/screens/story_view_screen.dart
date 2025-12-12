@@ -189,12 +189,14 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   ),
                 ),
                 // Content
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.w),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                IgnorePointer(
+                  ignoring: false,
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                         Container(
                           width: 120.w,
                           height: 120.w,
@@ -247,7 +249,10 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                         if (story.onActionTap != null) ...[
                           SizedBox(height: 40.h),
                           ElevatedButton.icon(
-                            onPressed: story.onActionTap,
+                            onPressed: () {
+                              // Prevent event bubbling to GestureDetector
+                              story.onActionTap?.call();
+                            },
                             icon: Icon(
                               story.actionIcon ?? Icons.telegram,
                               size: 24.sp,
@@ -271,14 +276,16 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                         ],
                       ],
                     ),
+                    ),
                   ),
                 ),
-                // Navigation areas
+                // Navigation areas (only for content area, not button area)
                 Row(
                   children: [
                     Expanded(
                       child: GestureDetector(
                         onTap: _previousStory,
+                        behavior: HitTestBehavior.translucent,
                         child: Container(
                           color: Colors.transparent,
                         ),
@@ -287,6 +294,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: _nextStory,
+                        behavior: HitTestBehavior.translucent,
                         child: Container(
                           color: Colors.transparent,
                         ),
