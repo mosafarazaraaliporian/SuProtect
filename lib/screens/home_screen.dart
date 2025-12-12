@@ -727,62 +727,66 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                       // Welcome section - centered vertically and horizontally
                       Expanded(
-                        child: Container(
-                          key: _welcomeKey,
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 20.w),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (!_isProcessing && !_isUploading && _uploadProgress == 0) ...[
-                                Icon(
-                                  Icons.home,
-                                  size: 50.sp,
-                                  color: const Color(0xFF9C88FF),
-                                ),
-                                SizedBox(height: 12.h),
-                                Text(
-                                  'Welcome to SuProtect',
-                                  style: TextStyle(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 6.h),
-                                Text(
-                                  'Your app protection solution',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 24.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                          child: Container(
+                            key: _welcomeKey,
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (!_isProcessing && !_isUploading && _uploadProgress == 0) ...[
+                                    Icon(
+                                      Icons.home,
+                                      size: 50.sp,
+                                      color: const Color(0xFF9C88FF),
+                                    ),
+                                    SizedBox(height: 12.h),
                                     Text(
-                                      'Upload a file to get started',
+                                      'Welcome to SuProtect',
                                       style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
-                                    SizedBox(width: 8.w),
-                                    Icon(
-                                      Icons.rocket_launch,
-                                      size: 20.sp,
-                                      color: const Color(0xFF9C88FF),
+                                    SizedBox(height: 6.h),
+                                    Text(
+                                      'Your app protection solution',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 24.h),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Upload a file to get started',
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Icon(
+                                          Icons.rocket_launch,
+                                          size: 20.sp,
+                                          color: const Color(0xFF9C88FF),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                                ),
-                              ],
-                            ],
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
                       ),
                     ],
                   ),
