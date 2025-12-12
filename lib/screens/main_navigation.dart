@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'info_screen.dart';
 import 'upload_apk_screen.dart';
+import '../providers/theme_provider.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -37,113 +40,135 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
+    final primaryColor = const Color(0xFF9C88FF);
+
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return Scaffold(
+          body: _screens[_currentIndex],
+          floatingActionButton: FloatingActionButton(
+            onPressed: _onUploadPressed,
+            backgroundColor: primaryColor,
+            elevation: 8,
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 28.sp,
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: Container(
+                height: 70.h,
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(Icons.person_outline, 'Profile', 0, isDark, primaryColor),
+                    _buildHomeButton(1, isDark, primaryColor),
+                    _buildNavItem(Icons.info_outline, 'Info', 2, isDark, primaryColor),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index, bool isDark, Color primaryColor) {
+    final isSelected = _currentIndex == index;
+    return Expanded(
+      child: InkWell(
+        onTap: () => _onItemTapped(index),
+        borderRadius: BorderRadius.circular(12.r),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
+              size: 24.sp,
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                fontSize: 11.sp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
             ),
           ],
         ),
-        child: BottomAppBar(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+      ),
+    );
+  }
+
+  Widget _buildHomeButton(int index, bool isDark, Color primaryColor) {
+    final isSelected = _currentIndex == index;
+    return Expanded(
+      child: InkWell(
+        onTap: () => _onItemTapped(index),
+        borderRadius: BorderRadius.circular(16.r),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 8.w),
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            color: isSelected ? primaryColor.withOpacity(0.15) : Colors.transparent,
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _buildNavItem(Icons.person, 'Profile', 0),
-              _buildNavItem(Icons.home, 'Home', 1),
-              _buildFloatingButton(),
-              _buildNavItem(Icons.info, 'Info', 2),
+              Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: isSelected ? primaryColor : Colors.transparent,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? primaryColor : (isDark ? Colors.grey[400]! : Colors.grey[300]!),
+                    width: 2,
+                  ),
+                ),
+                child: Icon(
+                  Icons.home,
+                  color: isSelected ? Colors.white : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                  size: 20.sp,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                'Home',
+                style: TextStyle(
+                  color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                  fontSize: 11.sp,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    final isSelected = _currentIndex == index;
-    return Expanded(
-      child: InkWell(
-        onTap: () => _onItemTapped(index),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.deepPurple : Colors.grey,
-              size: 28,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.deepPurple : Colors.grey,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  Colors.deepPurple,
-                  Colors.deepPurple.shade700,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.deepPurple.withOpacity(0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _onUploadPressed,
-                borderRadius: BorderRadius.circular(28),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Upload',
-            style: TextStyle(
-              color: Colors.deepPurple,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
-
