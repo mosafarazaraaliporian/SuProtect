@@ -29,13 +29,23 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
-  void _onUploadPressed() {
-    Navigator.push(
+  void _onUploadPressed() async {
+    // Navigate to upload screen
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const UploadApkScreen(),
       ),
     );
+
+    // If file was selected, switch to Home tab and start upload
+    if (result != null && result is String) {
+      setState(() {
+        _currentIndex = 1; // Switch to Home
+      });
+      // Start upload in Home screen
+      _homeKey.currentState?.startUploadFromFile(result);
+    }
   }
 
   @override

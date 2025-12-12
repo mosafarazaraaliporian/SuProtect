@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 import 'story_view_screen.dart';
+import 'upload_apk_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,7 +16,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+class _HomeScreenState extends State<HomeScreen> {
   bool _hasSeenWelcomeStory = false;
+  bool _isUploading = false;
+  double _uploadProgress = 0.0;
+  String? _uploadingFileName;
+  Timer? _uploadTimer;
 
   @override
   void initState() {
@@ -35,6 +44,12 @@ class _HomeScreenState extends State<HomeScreen> {
         'screen_class': 'HomeScreen',
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _uploadTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _checkWelcomeStory() async {
@@ -71,6 +86,93 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // This method will be called from MainNavigation when upload button is pressed
+  void startUploadFromFile(String fileName) {
+    _uploadingFileName = fileName;
+    _startFakeUpload();
+  }
+
+  void _startFakeUpload() {
+    setState(() {
+      _isUploading = true;
+      _uploadProgress = 0.0;
+    });
+
+    // Initialize notification service
+    NotificationService().initialize();
+
+    // Start fake upload progress
+    _uploadTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (mounted) {
+        setState(() {
+          _uploadProgress += 0.02;
+          if (_uploadProgress >= 1.0) {
+            _uploadProgress = 1.0;
+            timer.cancel();
+            _completeUpload();
+          }
+        });
+
+        // Update notification
+        NotificationService().showUploadProgressNotification(
+          progress: (_uploadProgress * 100).toInt(),
+          fileName: _uploadingFileName ?? 'app.apk',
+        );
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  void _completeUpload() {
+    setState(() {
+      _isUploading = false;
+    });
+
+    // Show completion notification
+    NotificationService().showUploadCompleteNotification(
+      _uploadingFileName ?? 'app.apk',
+    );
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Upload completed successfully!', style: TextStyle(fontSize: 12.sp)),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    // Reset after delay
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _uploadProgress = 0.0;
+          _uploadingFileName = null;
+        });
+      }
+    });
+  }
+
+  void _cancelUpload() {
+    _uploadTimer?.cancel();
+    setState(() {
+      _isUploading = false;
+      _uploadProgress = 0.0;
+      _uploadingFileName = null;
+    });
+
+    // Cancel notification
+    NotificationService().cancelNotification();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Upload cancelled', style: TextStyle(fontSize: 12.sp)),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -90,6 +192,98 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Upload progress card
+                if (_isUploading || _uploadProgress > 0) ...[
+                  Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.cloud_upload,
+                                  size: 24.sp,
+                                  color: const Color(0xFF9C88FF),
+                                ),
+                                SizedBox(width: 12.w),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Uploading APK',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 2.h),
+                                      Text(
+                                        _uploadingFileName ?? 'app.apk',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.close, size: 20.sp),
+                                  onPressed: _cancelUpload,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12.h),
+                            LinearProgressIndicator(
+                              value: _uploadProgress,
+                              minHeight: 6.h,
+                              backgroundColor: Colors.grey[200],
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                Color(0xFF9C88FF),
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${(_uploadProgress * 100).toStringAsFixed(0)}%',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF9C88FF),
+                                  ),
+                                ),
+                                if (_isUploading)
+                                  Text(
+                                    'Uploading...',
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+
                 // Stories section
                 _buildStoriesSection(),
                 

@@ -7,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/firebase_service.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +17,9 @@ void main() async {
   
   // Initialize Firebase Services
   await FirebaseService().initialize();
+  
+  // Initialize Notification Service
+  await NotificationService().initialize();
   
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
