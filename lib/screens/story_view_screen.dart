@@ -23,6 +23,24 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
   double _progress = 0.0;
   Timer? _timer;
 
+  Color _getLighterColor(Color color) {
+    return Color.fromRGBO(
+      (color.red + 80).clamp(0, 255),
+      (color.green + 80).clamp(0, 255),
+      (color.blue + 80).clamp(0, 255),
+      color.opacity,
+    );
+  }
+
+  Color _getDarkerColor(Color color) {
+    return Color.fromRGBO(
+      (color.red - 80).clamp(0, 255),
+      (color.green - 80).clamp(0, 255),
+      (color.blue - 80).clamp(0, 255),
+      color.opacity,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -74,9 +92,9 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    widget.backgroundColor.shade400,
-                    widget.backgroundColor.shade700,
-                    widget.backgroundColor.shade900,
+                    _getLighterColor(widget.backgroundColor),
+                    widget.backgroundColor,
+                    _getDarkerColor(widget.backgroundColor),
                   ],
                 ),
               ),

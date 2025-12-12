@@ -199,6 +199,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Color _getLighterColor(Color color) {
+    return Color.fromRGBO(
+      (color.red + 50).clamp(0, 255),
+      (color.green + 50).clamp(0, 255),
+      (color.blue + 50).clamp(0, 255),
+      color.opacity,
+    );
+  }
+
+  Color _getDarkerColor(Color color) {
+    return Color.fromRGBO(
+      (color.red - 50).clamp(0, 255),
+      (color.green - 50).clamp(0, 255),
+      (color.blue - 50).clamp(0, 255),
+      color.opacity,
+    );
+  }
+
   Widget _buildStoryItem({
     required String title,
     required IconData icon,
@@ -224,8 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        color.shade400,
-                        color.shade700,
+                        _getLighterColor(color),
+                        _getDarkerColor(color),
                       ],
                     ),
                     border: Border.all(
