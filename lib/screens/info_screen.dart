@@ -61,7 +61,7 @@ class InfoScreen extends StatelessWidget {
             ),
             _buildFeatureItem(
               context,
-              Icons.monitoring,
+              Icons.analytics,
               'Monitoring',
               'Continuous monitoring of app security status',
             ),
