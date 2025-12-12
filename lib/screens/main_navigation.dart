@@ -17,10 +17,11 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 1; // Start with Home (index 1)
   String? _uploadFileName;
+  final GlobalKey _fabKey = GlobalKey();
 
   List<Widget> get _screens => [
     const ProfileScreen(),
-    HomeScreen(uploadFileName: _uploadFileName),
+    HomeScreen(uploadFileName: _uploadFileName, fabKey: _fabKey),
     const InfoScreen(),
   ];
 
@@ -66,6 +67,7 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           floatingActionButton: _currentIndex == 1 // Only show on Home (index 1)
               ? FloatingActionButton(
+                  key: _fabKey,
                   onPressed: _onUploadPressed,
                   backgroundColor: primaryColor,
                   elevation: 8,

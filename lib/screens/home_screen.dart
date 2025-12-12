@@ -11,8 +11,9 @@ import 'upload_apk_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? uploadFileName;
+  final GlobalKey? fabKey;
   
-  const HomeScreen({super.key, this.uploadFileName});
+  const HomeScreen({super.key, this.uploadFileName, this.fabKey});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -24,11 +25,17 @@ class _HomeScreenState extends State<HomeScreen> {
   double _uploadProgress = 0.0;
   String? _uploadingFileName;
   Timer? _uploadTimer;
+  bool _hasSeenUploadGuide = false;
+  bool _hasSeenTour = false;
+  int _tourStep = 0;
+  final GlobalKey _storiesKey = GlobalKey();
+  final GlobalKey _welcomeKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _checkWelcomeStory();
+    _checkTour();
     // Set system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -49,6 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _uploadingFileName = widget.uploadFileName;
         _startFakeUpload();
       }
+      // Show upload guide if first time
+      _checkUploadGuide();
     });
   }
 
@@ -83,6 +92,299 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     }
+  }
+
+  Future<void> _checkTour() async {
+    final prefs = await SharedPreferences.getInstance();
+    _hasSeenTour = prefs.getBool('has_seen_home_tour') ?? false;
+    
+    if (!_hasSeenTour && mounted) {
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          _showTour();
+        }
+      });
+    }
+  }
+
+  Future<void> _checkUploadGuide() async {
+    final prefs = await SharedPreferences.getInstance();
+    _hasSeenUploadGuide = prefs.getBool('has_seen_upload_guide') ?? false;
+    
+    if (!_hasSeenUploadGuide && mounted) {
+      Future.delayed(const Duration(milliseconds: 2000), () {
+        if (mounted && !_hasSeenUploadGuide && widget.fabKey?.currentContext != null) {
+          _showUploadGuide();
+        }
+      });
+    }
+  }
+
+  void _showUploadGuide() {
+    if (widget.fabKey?.currentContext == null) return;
+    
+    final RenderBox? renderBox = widget.fabKey?.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) => Stack(
+        children: [
+          Positioned(
+            left: position.dx - 80.w,
+            top: position.dy - 60.h,
+            child: Material(
+              color: Colors.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9C88FF),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Text(
+                      'Tap here to upload APK',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Icon(
+                    Icons.arrow_upward,
+                    color: const Color(0xFF9C88FF),
+                    size: 40.sp,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    
+    Future.delayed(const Duration(seconds: 3), () async {
+      if (mounted) {
+        Navigator.of(context).pop();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('has_seen_upload_guide', true);
+      }
+    });
+  }
+
+  void _showTour() {
+    setState(() {
+      _tourStep = 0;
+    });
+    _showTourStep();
+  }
+
+  void _showTourStep() {
+    if (_tourStep >= 3) {
+      final prefs = SharedPreferences.getInstance();
+      prefs.then((p) => p.setBool('has_seen_home_tour', true));
+      return;
+    }
+
+    String title = '';
+    String description = '';
+    GlobalKey? targetKey;
+
+    switch (_tourStep) {
+      case 0:
+        title = 'Stories';
+        description = 'Check out our stories for updates, tips, and features!';
+        targetKey = _storiesKey;
+        break;
+      case 1:
+        title = 'Welcome';
+        description = 'Welcome to SuProtect! Your app protection solution.';
+        targetKey = _welcomeKey;
+        break;
+      case 2:
+        title = 'Upload Button';
+        description = 'Tap the + button to upload your APK file for protection.';
+        targetKey = widget.fabKey;
+        break;
+    }
+
+    if (targetKey?.currentContext == null) {
+      setState(() {
+        _tourStep++;
+      });
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _showTourStep();
+      });
+      return;
+    }
+
+    final RenderBox? renderBox = targetKey?.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) {
+      setState(() {
+        _tourStep++;
+      });
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _showTourStep();
+      });
+      return;
+    }
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) => Stack(
+        children: [
+          // Highlight area
+          Positioned(
+            left: position.dx - 8.w,
+            top: position.dy - 8.h,
+            child: Container(
+              width: size.width + 16.w,
+              height: size.height + 16.h,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xFF9C88FF),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(12.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9C88FF).withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Tooltip
+          Positioned(
+            left: 20.w,
+            right: 20.w,
+            top: position.dy + size.height + 20.h,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF9C88FF),
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (_tourStep > 0)
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              setState(() {
+                                _tourStep--;
+                              });
+                              Future.delayed(const Duration(milliseconds: 300), () {
+                                if (mounted) _showTourStep();
+                              });
+                            },
+                            child: Text(
+                              'Previous',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
+                          )
+                        else
+                          const SizedBox(),
+                        Row(
+                          children: List.generate(3, (index) {
+                            return Container(
+                              margin: EdgeInsets.symmetric(horizontal: 4.w),
+                              width: 8.w,
+                              height: 8.w,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: index == _tourStep
+                                    ? const Color(0xFF9C88FF)
+                                    : Colors.grey[300],
+                              ),
+                            );
+                          }),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            setState(() {
+                              _tourStep++;
+                            });
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              if (mounted) {
+                                if (_tourStep < 3) {
+                                  _showTourStep();
+                                } else {
+                                  final prefs = SharedPreferences.getInstance();
+                                  prefs.then((p) => p.setBool('has_seen_home_tour', true));
+                                }
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF9C88FF),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.w,
+                              vertical: 8.h,
+                            ),
+                          ),
+                          child: Text(
+                            _tourStep == 2 ? 'Finish' : 'Next',
+                            style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showWelcomeStory() async {
@@ -133,6 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actionLabel: 'Join Channel',
         actionIcon: Icons.telegram,
         onActionTap: () async {
+          Navigator.pop(context); // Close story first
           final url = Uri.parse('https://t.me/your_channel'); // Replace with your Telegram channel
           if (await canLaunchUrl(url)) {
             await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -149,7 +452,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ];
   }
-
 
   void _startFakeUpload() {
     setState(() {
@@ -251,7 +553,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Upload progress card
+                // Stories section - at the top
+                Container(
+                  key: _storiesKey,
+                  child: _buildStoriesSection(),
+                ),
+                
+                // Upload progress card - below stories
                 if (_isUploading || _uploadProgress > 0) ...[
                   Padding(
                     padding: EdgeInsets.all(16.w),
@@ -342,16 +650,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-
-                // Stories section
-                _buildStoriesSection(),
                 
-                SizedBox(height: 16.h),
-                
-                // Main content
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                // Welcome section - centered
+                Container(
+                  key: _welcomeKey,
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 40.h),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
@@ -376,39 +681,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                         ),
                         textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 24.h),
-                      Card(
-                        margin: EdgeInsets.symmetric(horizontal: 0),
-                        child: Padding(
-                          padding: EdgeInsets.all(16.w),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.security,
-                                size: 32.sp,
-                                color: const Color(0xFF9C88FF),
-                              ),
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Protection Status',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                'Active',
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
                     ],
                   ),
