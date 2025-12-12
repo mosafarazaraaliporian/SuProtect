@@ -15,7 +15,7 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
+  int _currentIndex = 1; // Start with Home (index 1)
 
   final List<Widget> _screens = [
     const ProfileScreen(),
