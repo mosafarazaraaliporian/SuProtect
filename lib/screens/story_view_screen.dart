@@ -188,15 +188,13 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     ),
                   ),
                 ),
-                // Content
-                IgnorePointer(
-                  ignoring: false,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.w),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                // Content - Center area (non-interactive for navigation)
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         Container(
                           width: 120.w,
                           height: 120.w,
@@ -249,31 +247,47 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                         if (story.onActionTap != null) ...[
                           SizedBox(height: 40.h),
                           GestureDetector(
-                            onTap: () {}, // Absorb tap to prevent navigation
+                            onTap: () {
+                              // Stop event propagation
+                            },
+                            behavior: HitTestBehavior.opaque,
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                // Execute action without closing story
+                                // Pause story progress
+                                setState(() {
+                                  _isPaused = true;
+                                });
+                                // Execute action
                                 story.onActionTap?.call();
+                                // Resume after a short delay
+                                Future.delayed(const Duration(milliseconds: 500), () {
+                                  if (mounted) {
+                                    setState(() {
+                                      _isPaused = false;
+                                    });
+                                  }
+                                });
                               },
-                            icon: Icon(
-                              story.actionIcon ?? Icons.telegram,
-                              size: 24.sp,
-                            ),
-                            label: Text(
-                              story.actionLabel ?? 'Join Telegram',
-                              style: TextStyle(fontSize: 16.sp),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: story.backgroundColor,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 24.w,
-                                vertical: 12.h,
+                              icon: Icon(
+                                story.actionIcon ?? Icons.telegram,
+                                size: 24.sp,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.r),
+                              label: Text(
+                                story.actionLabel ?? 'Join Telegram',
+                                style: TextStyle(fontSize: 16.sp),
                               ),
-                            ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: story.backgroundColor,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 24.w,
+                                  vertical: 12.h,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.r),
+                                ),
+                                elevation: 8,
+                              ),
                             ),
                           ),
                         ],
@@ -281,11 +295,12 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     ),
                   ),
                 ),
-                ),
-                // Navigation areas (only for empty areas, not content)
+                // Navigation areas - Left and Right sides only
                 Row(
                   children: [
+                    // Left side - Previous story
                     Expanded(
+                      flex: 2,
                       child: GestureDetector(
                         onTap: _previousStory,
                         behavior: HitTestBehavior.translucent,
@@ -294,7 +309,22 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                         ),
                       ),
                     ),
+                    // Center area - Blocked from navigation (content area)
                     Expanded(
+                      flex: 3,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Block navigation in center area
+                        },
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          color: Colors.transparent,
+                        ),
+                      ),
+                    ),
+                    // Right side - Next story
+                    Expanded(
+                      flex: 2,
                       child: GestureDetector(
                         onTap: _nextStory,
                         behavior: HitTestBehavior.translucent,
