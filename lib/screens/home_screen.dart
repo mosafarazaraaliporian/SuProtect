@@ -16,8 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-class _HomeScreenState extends State<HomeScreen> {
   bool _hasSeenWelcomeStory = false;
   bool _isUploading = false;
   double _uploadProgress = 0.0;
@@ -86,11 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // This method will be called from MainNavigation when upload button is pressed
-  void startUploadFromFile(String fileName) {
-    _uploadingFileName = fileName;
-    _startFakeUpload();
-  }
 
   void _startFakeUpload() {
     setState(() {

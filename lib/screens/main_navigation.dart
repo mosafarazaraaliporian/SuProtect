@@ -16,10 +16,11 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 1; // Start with Home (index 1)
+  String? _uploadFileName;
 
-  final List<Widget> _screens = [
+  List<Widget> get _screens => [
     const ProfileScreen(),
-    const HomeScreen(),
+    HomeScreen(uploadFileName: _uploadFileName),
     const InfoScreen(),
   ];
 
@@ -42,9 +43,8 @@ class _MainNavigationState extends State<MainNavigation> {
     if (result != null && result is String) {
       setState(() {
         _currentIndex = 1; // Switch to Home
+        _uploadFileName = result;
       });
-      // Start upload in Home screen
-      _homeKey.currentState?.startUploadFromFile(result);
     }
   }
 
@@ -60,7 +60,10 @@ class _MainNavigationState extends State<MainNavigation> {
       splitScreenMode: true,
       builder: (context, child) {
         return Scaffold(
-          body: _screens[_currentIndex],
+          body: IndexedStack(
+            index: _currentIndex,
+            children: _screens,
+          ),
           floatingActionButton: FloatingActionButton(
             onPressed: _onUploadPressed,
             backgroundColor: primaryColor,
