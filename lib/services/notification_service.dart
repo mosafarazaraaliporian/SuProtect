@@ -66,6 +66,7 @@ class NotificationService {
       progress: progress,
       indeterminate: false,
       channelShowBadge: false,
+      icon: '@mipmap/ic_launcher',
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
@@ -90,6 +91,7 @@ class NotificationService {
       channelDescription: uploadChannel.description,
       importance: Importance.high,
       priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
