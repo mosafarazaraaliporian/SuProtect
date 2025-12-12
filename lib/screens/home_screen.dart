@@ -97,14 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkTour() async {
     final prefs = await SharedPreferences.getInstance();
     _hasSeenTour = prefs.getBool('has_seen_home_tour') ?? false;
-    
-    if (!_hasSeenTour && mounted) {
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (mounted) {
-          _showTour();
-        }
-      });
-    }
+    // Don't show tour automatically - it will be shown after welcome story is seen
   }
 
   Future<void> _checkUploadGuide() async {
@@ -405,6 +398,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _hasSeenWelcomeStory = true;
     });
+    
+    // Show tour after story is viewed
+    if (mounted) {
+      final hasSeenTour = prefs.getBool('has_seen_home_tour') ?? false;
+      if (!hasSeenTour) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            _showTour();
+          }
+        });
+      }
+    }
   }
 
   List<StoryData> _getStoriesList(int startIndex) {
@@ -551,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           body: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Stories section - at the top
                 Container(
@@ -654,6 +659,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Welcome section - centered
                 Container(
                   key: _welcomeKey,
+                  width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 40.h),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
