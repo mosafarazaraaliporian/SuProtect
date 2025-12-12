@@ -182,12 +182,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showTourStep() async {
+    if (!mounted) return;
+    
     if (_tourStep >= 3) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('has_seen_home_tour', true);
-      setState(() {
-        _hasSeenTour = true;
-      });
+      if (mounted) {
+        setState(() {
+          _hasSeenTour = true;
+        });
+      }
       return;
     }
 
@@ -213,87 +217,97 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
     }
 
-    if (targetKey?.currentContext == null) {
-      setState(() {
-        _tourStep++;
-      });
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) _showTourStep();
-      });
-      return;
-    }
-
-    final RenderBox? renderBox = targetKey?.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) {
-      setState(() {
-        _tourStep++;
-      });
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) _showTourStep();
-      });
-      return;
-    }
-
-    final position = renderBox.localToGlobal(Offset.zero);
-    final size = renderBox.size;
-    final screenHeight = MediaQuery.of(context).size.height;
-    
-    // Calculate tooltip position
-    double tooltipTop;
-    bool showAbove = false;
-    
-    if (_tourStep == 2) {
-      // For FAB, show tooltip above
-      tooltipTop = position.dy - 200.h;
-      showAbove = true;
-      // Ensure it doesn't go above screen
-      if (tooltipTop < 20.h) {
-        tooltipTop = 20.h;
-        showAbove = false;
+    if (targetKey?.currentContext == null || !mounted) {
+      if (mounted) {
+        setState(() {
+          _tourStep++;
+        });
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) _showTourStep();
+        });
       }
-    } else {
-      // For stories and welcome, show tooltip below
-      tooltipTop = position.dy + size.height + 20.h;
-      // Ensure it doesn't go below screen (considering tooltip height ~250)
-      if (tooltipTop + 250.h > screenHeight) {
-        tooltipTop = position.dy - 250.h; // Show above instead
-        showAbove = true;
-        // If still doesn't fit, center it
-        if (tooltipTop < 20.h) {
-          tooltipTop = (screenHeight - 300.h) / 2;
+      return;
+    }
+
+    try {
+      final RenderBox? renderBox = targetKey?.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox == null || !renderBox.hasSize || !mounted) {
+        if (mounted) {
+          setState(() {
+            _tourStep++;
+          });
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) _showTourStep();
+          });
         }
+        return;
       }
-    }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.7),
-      builder: (dialogContext) {
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            return Stack(
+      final position = renderBox.localToGlobal(Offset.zero);
+      final size = renderBox.size;
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black.withOpacity(0.7),
+        builder: (dialogContext) {
+          if (!mounted) return const SizedBox();
+          
+          final screenSize = MediaQuery.of(dialogContext).size;
+          final screenHeight = screenSize.height;
+          final screenWidth = screenSize.width;
+          
+          // Calculate tooltip position
+          double tooltipTop;
+          
+          if (_tourStep == 2) {
+            // For FAB, show tooltip above
+            tooltipTop = position.dy - 200;
+            // Ensure it doesn't go above screen
+            if (tooltipTop < 20) {
+              tooltipTop = 20;
+            }
+          } else {
+            // For stories and welcome, show tooltip below
+            tooltipTop = position.dy + size.height + 20;
+            // Ensure it doesn't go below screen (considering tooltip height ~250)
+            if (tooltipTop + 250 > screenHeight) {
+              tooltipTop = position.dy - 250; // Show above instead
+              // If still doesn't fit, center it
+              if (tooltipTop < 20) {
+                tooltipTop = (screenHeight - 300) / 2;
+              }
+            }
+          }
+
+          // Clamp positions to valid ranges
+          final clampedLeft = (position.dx - 8).clamp(0.0, screenWidth - size.width - 16);
+          final clampedTop = (position.dy - 8).clamp(0.0, screenHeight - size.height - 16);
+          final clampedTooltipTop = tooltipTop.clamp(20.0, screenHeight - 300.0);
+
+          return Material(
+            type: MaterialType.transparency,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                // Dark overlay with cutout for highlight
-                GestureDetector(
-                  onTap: () {}, // Prevent dismiss on tap
-                  child: Container(
-                    color: Colors.black.withOpacity(0.7),
-                  ),
+                // Dark overlay
+                Container(
+                  color: Colors.black.withOpacity(0.7),
                 ),
-                // Highlight area (cutout effect)
+                // Highlight area
                 Positioned(
-                  left: position.dx - 8.w,
-                  top: position.dy - 8.h,
+                  left: clampedLeft,
+                  top: clampedTop,
                   child: Container(
-                    width: size.width + 16.w,
-                    height: size.height + 16.h,
+                    width: (size.width + 16).clamp(0.0, screenWidth - clampedLeft),
+                    height: (size.height + 16).clamp(0.0, screenHeight - clampedTop),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: const Color(0xFF9C88FF),
                         width: 3,
                       ),
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF9C88FF).withOpacity(0.3),
@@ -306,16 +320,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 // Tooltip
                 Positioned(
-                  left: 20.w,
-                  right: 20.w,
-                  top: tooltipTop.clamp(20.h, constraints.maxHeight - 300.h),
+                  left: 20,
+                  right: 20,
+                  top: clampedTooltipTop,
                   child: Material(
                     color: Colors.transparent,
                     child: Container(
-                      padding: EdgeInsets.all(16.w),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.2),
@@ -331,45 +345,47 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             title,
-                            style: TextStyle(
-                              fontSize: 16.sp,
+                            style: const TextStyle(
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF9C88FF),
+                              color: Color(0xFF9C88FF),
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: 8.h),
+                          const SizedBox(height: 8),
                           Text(
                             description,
-                            style: TextStyle(
-                              fontSize: 12.sp,
+                            style: const TextStyle(
+                              fontSize: 12,
                               color: Colors.black87,
                             ),
                             textAlign: TextAlign.center,
                           ),
                           // Show fake APK cards for step 1 (Welcome)
                           if (_tourStep == 1) ...[
-                            SizedBox(height: 16.h),
+                            const SizedBox(height: 16),
                             _buildFakeApkCards(),
                           ],
-                          SizedBox(height: 16.h),
+                          const SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               if (_tourStep > 0)
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop();
-                                    setState(() {
-                                      _tourStep--;
-                                    });
-                                    Future.delayed(const Duration(milliseconds: 300), () {
-                                      if (mounted) _showTourStep();
-                                    });
+                                    Navigator.of(dialogContext).pop();
+                                    if (mounted) {
+                                      setState(() {
+                                        _tourStep--;
+                                      });
+                                      Future.delayed(const Duration(milliseconds: 300), () {
+                                        if (mounted) _showTourStep();
+                                      });
+                                    }
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'Previous',
-                                    style: TextStyle(fontSize: 12.sp),
+                                    style: TextStyle(fontSize: 12),
                                   ),
                                 )
                               else
@@ -377,9 +393,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Row(
                                 children: List.generate(3, (index) {
                                   return Container(
-                                    margin: EdgeInsets.symmetric(horizontal: 4.w),
-                                    width: 8.w,
-                                    height: 8.w,
+                                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                                    width: 8,
+                                    height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: index == _tourStep
@@ -391,7 +407,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               ElevatedButton(
                                 onPressed: () async {
-                                  Navigator.of(context).pop();
+                                  Navigator.of(dialogContext).pop();
+                                  if (!mounted) return;
+                                  
                                   setState(() {
                                     _tourStep++;
                                   });
@@ -402,22 +420,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                     } else {
                                       final prefs = await SharedPreferences.getInstance();
                                       await prefs.setBool('has_seen_home_tour', true);
-                                      setState(() {
-                                        _hasSeenTour = true;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          _hasSeenTour = true;
+                                        });
+                                      }
                                     }
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF9C88FF),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 20.w,
-                                    vertical: 8.h,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 8,
                                   ),
                                 ),
                                 child: Text(
                                   _tourStep == 2 ? 'Finish' : 'Next',
-                                  style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                                  style: const TextStyle(fontSize: 12, color: Colors.white),
                                 ),
                               ),
                             ],
@@ -428,11 +448,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ],
-            );
-          },
-        );
-      },
-    );
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      // Handle error gracefully
+      debugPrint('Tour guide error: $e');
+      if (mounted) {
+        setState(() {
+          _tourStep++;
+        });
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted && _tourStep < 3) {
+            _showTourStep();
+          }
+        });
+      }
+    }
   }
 
   Future<void> _showWelcomeStory() async {
