@@ -202,8 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
         targetKey = _storiesKey;
         break;
       case 1:
-        title = 'Welcome';
-        description = 'Welcome to SuProtect! Your app protection solution.';
+        title = 'Your Apps';
+        description = 'اینجا برنامه‌های شما را نشان می‌دهد';
         targetKey = _welcomeKey;
         break;
       case 2:
@@ -312,6 +312,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    // Show fake APK cards for step 1 (Welcome)
+                    if (_tourStep == 1) ...[
+                      SizedBox(height: 16.h),
+                      _buildFakeApkCards(),
+                    ],
                     SizedBox(height: 16.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -917,6 +922,78 @@ class _HomeScreenState extends State<HomeScreen> {
       (color.green - 50).clamp(0, 255),
       (color.blue - 50).clamp(0, 255),
       color.opacity,
+    );
+  }
+
+  Widget _buildFakeApkCards() {
+    return Column(
+      children: [
+        _buildFakeApkCard('MyApp.apk', 'Processing', Icons.build, Colors.orange),
+        SizedBox(height: 8.h),
+        _buildFakeApkCard('Game.apk', 'Protected', Icons.security, Colors.green),
+        SizedBox(height: 8.h),
+        _buildFakeApkCard('Tool.apk', 'Completed', Icons.check_circle, Colors.blue),
+      ],
+    );
+  }
+
+  Widget _buildFakeApkCard(String fileName, String status, IconData icon, Color statusColor) {
+    return Container(
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF9C88FF).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(
+              Icons.android,
+              size: 24.sp,
+              color: const Color(0xFF9C88FF),
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fileName,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  children: [
+                    Icon(
+                      icon,
+                      size: 14.sp,
+                      color: statusColor,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      status,
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: statusColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
