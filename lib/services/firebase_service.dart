@@ -1,7 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_installations/firebase_installations.dart';
 import 'package:flutter/foundation.dart';
 
 class FirebaseService {
@@ -67,9 +66,9 @@ class FirebaseService {
         debugPrint('FCM Token refreshed: $newToken');
       });
 
-      // Get Installation ID
-      _installationId = await FirebaseInstallations.instance.getId();
-      debugPrint('Installation ID: $_installationId');
+      // Use FCM Token as Installation ID (unique per installation)
+      _installationId = _fcmToken;
+      debugPrint('Installation ID (FCM Token): $_installationId');
 
       // Setup foreground message handler
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
