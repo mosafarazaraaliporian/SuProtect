@@ -303,124 +303,126 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 20.w,
                   top: tooltipTop.clamp(20.h, constraints.maxHeight - 300.h),
                   child: Material(
-              color: Colors.transparent,
-              child: Container(
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF9C88FF),
+                    color: Colors.transparent,
+                    child: Container(
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    // Show fake APK cards for step 1 (Welcome)
-                    if (_tourStep == 1) ...[
-                      SizedBox(height: 16.h),
-                      _buildFakeApkCards(),
-                    ],
-                    SizedBox(height: 16.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (_tourStep > 0)
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              setState(() {
-                                _tourStep--;
-                              });
-                              Future.delayed(const Duration(milliseconds: 300), () {
-                                if (mounted) _showTourStep();
-                              });
-                            },
-                            child: Text(
-                              'Previous',
-                              style: TextStyle(fontSize: 12.sp),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF9C88FF),
                             ),
-                          )
-                        else
-                          const SizedBox(),
-                        Row(
-                          children: List.generate(3, (index) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 4.w),
-                              width: 8.w,
-                              height: 8.w,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: index == _tourStep
-                                    ? const Color(0xFF9C88FF)
-                                    : Colors.grey[300],
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            description,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          // Show fake APK cards for step 1 (Welcome)
+                          if (_tourStep == 1) ...[
+                            SizedBox(height: 16.h),
+                            _buildFakeApkCards(),
+                          ],
+                          SizedBox(height: 16.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              if (_tourStep > 0)
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    setState(() {
+                                      _tourStep--;
+                                    });
+                                    Future.delayed(const Duration(milliseconds: 300), () {
+                                      if (mounted) _showTourStep();
+                                    });
+                                  },
+                                  child: Text(
+                                    'Previous',
+                                    style: TextStyle(fontSize: 12.sp),
+                                  ),
+                                )
+                              else
+                                const SizedBox(),
+                              Row(
+                                children: List.generate(3, (index) {
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 4.w),
+                                    width: 8.w,
+                                    height: 8.w,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: index == _tourStep
+                                          ? const Color(0xFF9C88FF)
+                                          : Colors.grey[300],
+                                    ),
+                                  );
+                                }),
                               ),
-                            );
-                          }),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            setState(() {
-                              _tourStep++;
-                            });
-                            await Future.delayed(const Duration(milliseconds: 300));
-                            if (mounted) {
-                              if (_tourStep < 3) {
-                                _showTourStep();
-                              } else {
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setBool('has_seen_home_tour', true);
-                                setState(() {
-                                  _hasSeenTour = true;
-                                });
-                              }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF9C88FF),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.w,
-                              vertical: 8.h,
-                            ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  Navigator.of(context).pop();
+                                  setState(() {
+                                    _tourStep++;
+                                  });
+                                  await Future.delayed(const Duration(milliseconds: 300));
+                                  if (mounted) {
+                                    if (_tourStep < 3) {
+                                      _showTourStep();
+                                    } else {
+                                      final prefs = await SharedPreferences.getInstance();
+                                      await prefs.setBool('has_seen_home_tour', true);
+                                      setState(() {
+                                        _hasSeenTour = true;
+                                      });
+                                    }
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF9C88FF),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 8.h,
+                                  ),
+                                ),
+                                child: Text(
+                                  _tourStep == 2 ? 'Finish' : 'Next',
+                                  style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            _tourStep == 2 ? 'Finish' : 'Next',
-                            style: TextStyle(fontSize: 12.sp, color: Colors.white),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      );
-    },
-  );
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _showWelcomeStory() async {
