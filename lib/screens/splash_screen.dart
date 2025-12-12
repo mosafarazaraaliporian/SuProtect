@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -20,6 +21,16 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
+    // Set system UI overlay style to match app color
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xFF9C88FF),
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Color(0xFF9C88FF),
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
 
     // Setup animations
     _animationController = AnimationController(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
@@ -18,6 +19,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Set system UI overlay style to match app color
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xFF9C88FF),
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Color(0xFF9C88FF),
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+  }
 
   @override
   void dispose() {

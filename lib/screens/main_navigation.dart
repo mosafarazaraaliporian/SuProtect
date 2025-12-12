@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'home_screen.dart';
@@ -28,6 +29,29 @@ class _MainNavigationState extends State<MainNavigation> {
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Set system UI overlay style based on theme
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: themeProvider.isDarkMode
+              ? Brightness.light
+              : Brightness.dark,
+          systemNavigationBarColor: themeProvider.isDarkMode
+              ? const Color(0xFF121212)
+              : Colors.white,
+          systemNavigationBarIconBrightness: themeProvider.isDarkMode
+              ? Brightness.light
+              : Brightness.dark,
+        ),
+      );
     });
   }
 
