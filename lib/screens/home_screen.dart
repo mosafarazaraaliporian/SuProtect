@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import '../services/firebase_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Log screen view to Firebase Analytics
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FirebaseService().logEvent('screen_view', {
+        'screen_name': 'home',
+        'screen_class': 'HomeScreen',
+      });
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),

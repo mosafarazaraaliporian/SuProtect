@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/firebase_service.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -46,6 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      // Log successful login to Firebase Analytics
+      await FirebaseService().logEvent('login', {
+        'method': 'email',
+      });
       // Navigation will be handled by main.dart based on auth state
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
