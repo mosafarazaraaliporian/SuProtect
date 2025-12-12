@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (_tourStep) {
       case 0:
         title = 'Stories';
-        description = 'Check out our stories for updates, tips, and features!';
+        description = 'اخبار و اعلان‌های مهم هستن اینها';
         targetKey = _storiesKey;
         break;
       case 1:
@@ -236,48 +236,73 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final position = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;
+    final screenHeight = MediaQuery.of(context).size.height;
     
-    // For FAB (step 2), show tooltip above, for others show below
-    final isFAB = _tourStep == 2;
-    final tooltipTop = isFAB 
-        ? position.dy - 180.h // Above the FAB (with some space for tooltip)
-        : position.dy + size.height + 20.h; // Below for others
+    // Calculate tooltip position
+    double tooltipTop;
+    bool showAbove = false;
+    
+    if (_tourStep == 2) {
+      // For FAB, show tooltip above
+      tooltipTop = position.dy - 200.h;
+      showAbove = true;
+      // Ensure it doesn't go above screen
+      if (tooltipTop < 20.h) {
+        tooltipTop = 20.h;
+        showAbove = false;
+      }
+    } else {
+      // For stories and welcome, show tooltip below
+      tooltipTop = position.dy + size.height + 20.h;
+      // Ensure it doesn't go below screen (considering tooltip height ~250)
+      if (tooltipTop + 250.h > screenHeight) {
+        tooltipTop = position.dy - 250.h; // Show above instead
+        showAbove = true;
+        // If still doesn't fit, center it
+        if (tooltipTop < 20.h) {
+          tooltipTop = (screenHeight - 300.h) / 2;
+        }
+      }
+    }
 
     showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.7),
-      builder: (context) => Stack(
-        children: [
-          // Highlight area
-          Positioned(
-            left: position.dx - 8.w,
-            top: position.dy - 8.h,
-            child: Container(
-              width: size.width + 16.w,
-              height: size.height + 16.h,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFF9C88FF),
-                  width: 3,
-                ),
-                borderRadius: BorderRadius.circular(12.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF9C88FF).withOpacity(0.3),
-                    blurRadius: 20,
-                    spreadRadius: 5,
+      builder: (dialogContext) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
+              children: [
+                // Highlight area
+                Positioned(
+                  left: position.dx - 8.w,
+                  top: position.dy - 8.h,
+                  child: Container(
+                    width: size.width + 16.w,
+                    height: size.height + 16.h,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xFF9C88FF),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF9C88FF).withOpacity(0.3),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          // Tooltip
-          Positioned(
-            left: 20.w,
-            right: 20.w,
-            top: tooltipTop > 0 ? tooltipTop : 20.h, // Ensure it doesn't go off screen
-            child: Material(
+                ),
+                // Tooltip
+                Positioned(
+                  left: 20.w,
+                  right: 20.w,
+                  top: tooltipTop.clamp(20.h, constraints.maxHeight - 300.h),
+                  child: Material(
               color: Colors.transparent,
               child: Container(
                 padding: EdgeInsets.all(16.w),
@@ -393,8 +418,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-      ),
-    );
+      );
+    },
+  );
   }
 
   Future<void> _showWelcomeStory() async {
