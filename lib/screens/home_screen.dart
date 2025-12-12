@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _hasSeenUploadGuide = false;
   bool _hasSeenTour = false;
   int _tourStep = 0;
+  bool _isProcessing = false; // For fake processing after upload
   final GlobalKey _storiesKey = GlobalKey();
   final GlobalKey _welcomeKey = GlobalKey();
 
@@ -440,8 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actionLabel: 'Join Channel',
         actionIcon: Icons.telegram,
         onActionTap: () async {
-          Navigator.pop(context); // Close story first
-          final url = Uri.parse('https://t.me/your_channel'); // Replace with your Telegram channel
+          final url = Uri.parse('https://t.me/suprotect'); // Telegram channel link
           if (await canLaunchUrl(url)) {
             await launchUrl(url, mode: LaunchMode.externalApplication);
           } else {
@@ -493,6 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _completeUpload() {
     setState(() {
       _isUploading = false;
+      _isProcessing = true;
     });
 
     // Show completion notification
@@ -509,15 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    // Reset after delay
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _uploadProgress = 0.0;
-          _uploadingFileName = null;
-        });
-      }
-    });
+    // Keep processing state - don't reset, just show processing message
   }
 
   void _cancelUpload() {
@@ -554,18 +547,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             automaticallyImplyLeading: false,
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Stories section - at the top
-                Container(
-                  key: _storiesKey,
-                  child: _buildStoriesSection(),
-                ),
-                
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Stories section - at the top
+                      Container(
+                        key: _storiesKey,
+                        child: _buildStoriesSection(),
+                      ),
+                      
                 // Upload progress card - below stories
-                if (_isUploading || _uploadProgress > 0) ...[
+                if (_isUploading || _uploadProgress > 0 || _isProcessing) ...[
                   Padding(
                     padding: EdgeInsets.all(16.w),
                     child: Card(
@@ -581,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               children: [
                                 Icon(
-                                  Icons.cloud_upload,
+                                  _isProcessing ? Icons.build : Icons.cloud_upload,
                                   size: 24.sp,
                                   color: const Color(0xFF9C88FF),
                                 ),
@@ -591,7 +588,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Uploading APK',
+                                        _isProcessing ? 'Processing APK' : 'Uploading APK',
                                         style: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.bold,
@@ -610,45 +607,57 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                 ),
-                                IconButton(
-                                  icon: Icon(Icons.close, size: 20.sp),
-                                  onPressed: _cancelUpload,
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                ),
+                                if (!_isProcessing)
+                                  IconButton(
+                                    icon: Icon(Icons.close, size: 20.sp),
+                                    onPressed: _cancelUpload,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
                               ],
                             ),
-                            SizedBox(height: 12.h),
-                            LinearProgressIndicator(
-                              value: _uploadProgress,
-                              minHeight: 6.h,
-                              backgroundColor: Colors.grey[200],
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                Color(0xFF9C88FF),
-                              ),
-                            ),
-                            SizedBox(height: 8.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${(_uploadProgress * 100).toStringAsFixed(0)}%',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF9C88FF),
-                                  ),
+                            if (!_isProcessing) ...[
+                              SizedBox(height: 12.h),
+                              LinearProgressIndicator(
+                                value: _uploadProgress,
+                                minHeight: 6.h,
+                                backgroundColor: Colors.grey[200],
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Color(0xFF9C88FF),
                                 ),
-                                if (_isUploading)
+                              ),
+                              SizedBox(height: 8.h),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
                                   Text(
-                                    'Uploading...',
+                                    '${(_uploadProgress * 100).toStringAsFixed(0)}%',
                                     style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF9C88FF),
                                     ),
                                   ),
-                              ],
-                            ),
+                                  if (_isUploading)
+                                    Text(
+                                      'Uploading...',
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ] else ...[
+                              SizedBox(height: 12.h),
+                              Text(
+                                'در حال کار کردن روشه',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -656,42 +665,70 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
                 
-                // Welcome section - centered
-                Container(
-                  key: _welcomeKey,
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 40.h),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.home,
-                        size: 50.sp,
-                        color: const Color(0xFF9C88FF),
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        'Welcome to SuProtect',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
+                        // Welcome section - centered vertically and horizontally
+                        Expanded(
+                          child: Container(
+                            key: _welcomeKey,
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (!_isProcessing && !_isUploading && _uploadProgress == 0) ...[
+                                  Icon(
+                                    Icons.home,
+                                    size: 50.sp,
+                                    color: const Color(0xFF9C88FF),
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Text(
+                                    'Welcome to SuProtect',
+                                    style: TextStyle(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 6.h),
+                                  Text(
+                                    'Your app protection solution',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 24.h),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'برای شروع یک برنامه رو اپلود کنید',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Icon(
+                                        Icons.rocket_launch,
+                                        size: 20.sp,
+                                        color: const Color(0xFF9C88FF),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 6.h),
-                      Text(
-                        'Your app protection solution',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
           ),
         );
