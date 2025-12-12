@@ -248,11 +248,13 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                         ),
                         if (story.onActionTap != null) ...[
                           SizedBox(height: 40.h),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              // Prevent event bubbling to GestureDetector
-                              story.onActionTap?.call();
-                            },
+                          GestureDetector(
+                            onTap: () {}, // Absorb tap to prevent navigation
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // Execute action without closing story
+                                story.onActionTap?.call();
+                              },
                             icon: Icon(
                               story.actionIcon ?? Icons.telegram,
                               size: 24.sp,
@@ -272,14 +274,16 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                                 borderRadius: BorderRadius.circular(30.r),
                               ),
                             ),
+                            ),
                           ),
                         ],
-                      ],
-                    ),
+                        ],
+                      ),
                     ),
                   ),
+                    ),
                 ),
-                // Navigation areas (only for content area, not button area)
+                // Navigation areas (only for empty areas, not content)
                 Row(
                   children: [
                     Expanded(
