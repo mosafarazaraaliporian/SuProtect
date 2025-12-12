@@ -928,11 +928,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildFakeApkCards() {
     return Column(
       children: [
-        _buildFakeApkCard('MyApp.apk', 'Processing', Icons.build, Colors.orange),
+        _buildFakeApkCard('yourappname.apk', 'Processing', Icons.build, Colors.orange),
         SizedBox(height: 8.h),
-        _buildFakeApkCard('Game.apk', 'Protected', Icons.security, Colors.green),
+        _buildFakeApkCard('yourappname.apk', 'Protected', Icons.security, Colors.green),
         SizedBox(height: 8.h),
-        _buildFakeApkCard('Tool.apk', 'Completed', Icons.check_circle, Colors.blue),
+        _buildFakeApkCard('yourappname.apk', 'Completed', Icons.check_circle, Colors.blue),
       ],
     );
   }
