@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkTour() async {
     final prefs = await SharedPreferences.getInstance();
     _hasSeenTour = prefs.getBool('has_seen_home_tour') ?? false;
-    // Don't show tour automatically - it will be shown after welcome story is seen
+    // Don't show tour automatically - it will be shown after welcome story is seen (only once)
   }
 
   Future<void> _checkUploadGuide() async {
@@ -181,10 +181,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _showTourStep();
   }
 
-  void _showTourStep() {
+  void _showTourStep() async {
     if (_tourStep >= 3) {
-      final prefs = SharedPreferences.getInstance();
-      prefs.then((p) => p.setBool('has_seen_home_tour', true));
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('has_seen_home_tour', true);
+      setState(() {
+        _hasSeenTour = true;
+      });
       return;
     }
 
@@ -233,6 +236,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final position = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;
+    
+    // For FAB (step 2), show tooltip above, for others show below
+    final isFAB = _tourStep == 2;
+    final tooltipTop = isFAB 
+        ? position.dy - 180.h // Above the FAB (with some space for tooltip)
+        : position.dy + size.height + 20.h; // Below for others
 
     showDialog(
       context: context,
@@ -267,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned(
             left: 20.w,
             right: 20.w,
-            top: position.dy + size.height + 20.h,
+            top: tooltipTop > 0 ? tooltipTop : 20.h, // Ensure it doesn't go off screen
             child: Material(
               color: Colors.transparent,
               child: Container(
@@ -351,8 +360,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (_tourStep < 3) {
                                   _showTourStep();
                                 } else {
-                                  final prefs = SharedPreferences.getInstance();
-                                  prefs.then((p) => p.setBool('has_seen_home_tour', true));
+                                  final prefs = await SharedPreferences.getInstance();
+                                  await prefs.setBool('has_seen_home_tour', true);
+                                  setState(() {
+                                    _hasSeenTour = true;
+                                  });
                                 }
                               }
                             });
@@ -400,13 +412,19 @@ class _HomeScreenState extends State<HomeScreen> {
       _hasSeenWelcomeStory = true;
     });
     
-    // Show tour after story is viewed
+    // Show tour after story is viewed ONLY if not seen before
     if (mounted) {
-      final hasSeenTour = prefs.getBool('has_seen_home_tour') ?? false;
-      if (!hasSeenTour) {
+      final hasSeenTour = await prefs.getBool('has_seen_home_tour') ?? false;
+      if (!hasSeenTour && !_hasSeenTour) {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
-            _showTour();
+            // Check again before showing
+            SharedPreferences.getInstance().then((p) async {
+              final stillNotSeen = await p.getBool('has_seen_home_tour') ?? false;
+              if (mounted && !stillNotSeen) {
+                _showTour();
+              }
+            });
           }
         });
       }
