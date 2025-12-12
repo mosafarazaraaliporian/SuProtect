@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/firebase_service.dart';
 import 'story_view_screen.dart';
@@ -17,6 +19,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _checkWelcomeStory();
+    // Set system UI overlay style
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
     // Log screen view to Firebase Analytics
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FirebaseService().logEvent('screen_view', {
@@ -62,98 +73,114 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        automaticallyImplyLeading: false,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Stories section
-            _buildStoriesSection(),
-            
-            const SizedBox(height: 24),
-            
-            // Main content
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.home,
-                    size: 80,
-                    color: Colors.deepPurple,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Welcome to SuProtect',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'Home',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            automaticallyImplyLeading: false,
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Stories section
+                _buildStoriesSection(),
+                
+                SizedBox(height: 16.h),
+                
+                // Main content
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.home,
+                        size: 50.sp,
+                        color: const Color(0xFF9C88FF),
+                      ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        'Welcome to SuProtect',
+                        style: TextStyle(
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                         ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Your app protection solution',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 48),
-                  Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.security,
-                            size: 48,
-                            color: Colors.deepPurple,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Protection Status',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Active',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
+                        textAlign: TextAlign.center,
                       ),
-                    ),
+                      SizedBox(height: 6.h),
+                      Text(
+                        'Your app protection solution',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 24.h),
+                      Card(
+                        margin: EdgeInsets.symmetric(horizontal: 0),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.w),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.security,
+                                size: 32.sp,
+                                color: const Color(0xFF9C88FF),
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                'Protection Status',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                'Active',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildStoriesSection() {
     return Container(
-      height: 120,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      height: 90.h,
+      padding: EdgeInsets.symmetric(vertical: 12.h),
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 12.w),
         children: [
           // Welcome story
           _buildStoryItem(
             title: 'Welcome',
             icon: Icons.celebration,
-            color: Colors.deepPurple,
+            color: const Color(0xFF9C88FF),
             onTap: _showWelcomeStory,
             isNew: !_hasSeenWelcomeStory,
           ),
@@ -199,6 +226,82 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildStoryItem({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    bool isNew = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 60.w,
+        margin: EdgeInsets.only(right: 10.w),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  width: 60.w,
+                  height: 60.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        _getLighterColor(color),
+                        _getDarkerColor(color),
+                      ],
+                    ),
+                    border: Border.all(
+                      color: isNew ? Colors.red : Colors.grey.shade300,
+                      width: isNew ? 2.5 : 2,
+                    ),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 24.sp,
+                  ),
+                ),
+                if (isNew)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 16.w,
+                      height: 16.w,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.fiber_new,
+                        color: Colors.white,
+                        size: 10.sp,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Color _getLighterColor(Color color) {
     return Color.fromRGBO(
       (color.red + 50).clamp(0, 255),
@@ -214,82 +317,6 @@ class _HomeScreenState extends State<HomeScreen> {
       (color.green - 50).clamp(0, 255),
       (color.blue - 50).clamp(0, 255),
       color.opacity,
-    );
-  }
-
-  Widget _buildStoryItem({
-    required String title,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-    bool isNew = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 80,
-        margin: const EdgeInsets.only(right: 12),
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        _getLighterColor(color),
-                        _getDarkerColor(color),
-                      ],
-                    ),
-                    border: Border.all(
-                      color: isNew ? Colors.red : Colors.grey.shade300,
-                      width: isNew ? 3 : 2,
-                    ),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ),
-                if (isNew)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.fiber_new,
-                        color: Colors.white,
-                        size: 12,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

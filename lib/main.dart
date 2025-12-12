@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,6 +17,16 @@ void main() async {
   // Initialize Firebase Services
   await FirebaseService().initialize();
   
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+  
   runApp(const MyApp());
 }
 
@@ -31,6 +42,22 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
+          // Update system UI based on theme
+          SystemChrome.setSystemUIOverlayStyle(
+            SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: themeProvider.isDarkMode
+                  ? Brightness.light
+                  : Brightness.dark,
+              systemNavigationBarColor: themeProvider.isDarkMode
+                  ? const Color(0xFF121212)
+                  : Colors.white,
+              systemNavigationBarIconBrightness: themeProvider.isDarkMode
+                  ? Brightness.light
+                  : Brightness.dark,
+            ),
+          );
+          
           return MaterialApp(
             title: 'SuProtect',
             debugShowCheckedModeBanner: false,
