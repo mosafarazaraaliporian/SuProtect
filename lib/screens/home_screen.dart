@@ -9,7 +9,9 @@ import 'story_view_screen.dart';
 import 'upload_apk_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? uploadFileName;
+  
+  const HomeScreen({super.key, this.uploadFileName});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -42,11 +44,24 @@ class _HomeScreenState extends State<HomeScreen> {
         'screen_class': 'HomeScreen',
       });
       // If upload file name is provided, start upload
-      if (widget.uploadFileName != null && !_isUploading) {
+      if (widget.uploadFileName != null && !_isUploading && _uploadingFileName == null) {
         _uploadingFileName = widget.uploadFileName;
         _startFakeUpload();
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If upload file name changed and we're not currently uploading, start upload
+    if (widget.uploadFileName != null && 
+        widget.uploadFileName != oldWidget.uploadFileName &&
+        !_isUploading && 
+        _uploadingFileName == null) {
+      _uploadingFileName = widget.uploadFileName;
+      _startFakeUpload();
+    }
   }
 
   @override
