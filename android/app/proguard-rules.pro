@@ -40,3 +40,7 @@
     public static *** i(...);
 }
 
+# Google Play Core (optional dependency, may not be present)
+-dontwarn com.google.android.play.core.**
+-keep class com.google.android.play.core.** { *; }
+
