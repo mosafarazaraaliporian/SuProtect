@@ -41,6 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
         'screen_name': 'home',
         'screen_class': 'HomeScreen',
       });
+      // If upload file name is provided, start upload
+      if (widget.uploadFileName != null && !_isUploading) {
+        _uploadingFileName = widget.uploadFileName;
+        _startFakeUpload();
+      }
     });
   }
 
