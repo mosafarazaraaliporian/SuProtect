@@ -1,6 +1,15 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 
+const AndroidNotificationChannel uploadChannel = AndroidNotificationChannel(
+  'upload_channel',
+  'File Upload',
+  description: 'Shows progress of file uploads',
+  importance: Importance.low,
+  playSound: false,
+  enableVibration: false,
+);
+
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
@@ -20,6 +29,22 @@ class NotificationService {
     );
 
     await _notifications.initialize(initSettings);
+    
+    // Create notification channel for upload progress
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'upload_channel',
+      'File Upload',
+      description: 'Shows progress of file uploads',
+      importance: Importance.low,
+      playSound: false,
+      enableVibration: false,
+    );
+    
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+    
     _initialized = true;
   }
 
@@ -29,50 +54,29 @@ class NotificationService {
   }) async {
     if (!_initialized) await initialize();
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'upload_channel',
-      'File Upload',
-      channelDescription: 'Shows progress of file uploads',
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      uploadChannel.id,
+      uploadChannel.name,
+      channelDescription: uploadChannel.description,
       importance: Importance.low,
       priority: Priority.low,
       onlyAlertOnce: true,
       showProgress: true,
       maxProgress: 100,
-      progress: 0,
+      progress: progress,
       indeterminate: false,
+      channelShowBadge: false,
     );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
+    final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
     );
 
     await _notifications.show(
       1,
       'Uploading APK',
-      'Uploading $fileName...',
-      notificationDetails,
-      payload: 'upload',
-    );
-
-    // Update progress
-    await _notifications.show(
-      1,
-      'Uploading APK',
       'Uploading $fileName... $progress%',
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'upload_channel',
-          'File Upload',
-          channelDescription: 'Shows progress of file uploads',
-          importance: Importance.low,
-          priority: Priority.low,
-          onlyAlertOnce: true,
-          showProgress: true,
-          maxProgress: 100,
-          progress: progress,
-          indeterminate: false,
-        ),
-      ),
+      notificationDetails,
       payload: 'upload',
     );
   }
@@ -80,15 +84,15 @@ class NotificationService {
   Future<void> showUploadCompleteNotification(String fileName) async {
     if (!_initialized) await initialize();
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'upload_channel',
-      'File Upload',
-      channelDescription: 'Shows progress of file uploads',
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      uploadChannel.id,
+      uploadChannel.name,
+      channelDescription: uploadChannel.description,
       importance: Importance.high,
       priority: Priority.high,
     );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
+    final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
     );
 
