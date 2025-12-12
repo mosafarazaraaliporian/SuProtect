@@ -277,11 +277,10 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                             ),
                           ),
                         ],
-                        ],
-                      ),
+                      ],
                     ),
                   ),
-                    ),
+                ),
                 ),
                 // Navigation areas (only for empty areas, not content)
                 Row(
