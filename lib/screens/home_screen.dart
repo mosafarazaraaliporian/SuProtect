@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
 import 'story_view_screen.dart';
@@ -85,13 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _showWelcomeStory() async {
+    final stories = _getStoriesList(0);
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const StoryViewScreen(
-          title: 'Welcome to SuProtect!',
-          message: 'Your comprehensive app protection solution. Keep your applications secure and safe from various threats.',
-          icon: Icons.celebration,
+        builder: (context) => StoryViewScreen(
+          stories: stories,
+          initialIndex: 0,
         ),
       ),
     );
@@ -102,6 +103,51 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _hasSeenWelcomeStory = true;
     });
+  }
+
+  List<StoryData> _getStoriesList(int startIndex) {
+    return [
+      StoryData(
+        title: 'Welcome to SuProtect!',
+        message: 'Your comprehensive app protection solution. Keep your applications secure and safe from various threats.',
+        icon: Icons.celebration,
+        backgroundColor: const Color(0xFF9C88FF),
+      ),
+      StoryData(
+        title: 'Features',
+        message: 'Discover powerful features:\n\n• Security Protection\n• Threat Detection\n• Data Encryption\n• Real-time Monitoring',
+        icon: Icons.star,
+        backgroundColor: Colors.orange,
+      ),
+      StoryData(
+        title: 'Tips',
+        message: 'Best Practices:\n\n• Keep your app updated\n• Use strong passwords\n• Enable all security features\n• Regular security checks',
+        icon: Icons.lightbulb,
+        backgroundColor: Colors.amber,
+      ),
+      StoryData(
+        title: 'Join Our Telegram',
+        message: 'Stay updated with the latest news, updates, and tips!\n\nJoin our Telegram channel for exclusive content and support.',
+        icon: Icons.telegram,
+        backgroundColor: const Color(0xFF0088cc),
+        actionLabel: 'Join Channel',
+        actionIcon: Icons.telegram,
+        onActionTap: () async {
+          final url = Uri.parse('https://t.me/your_channel'); // Replace with your Telegram channel
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Could not open Telegram', style: TextStyle(fontSize: 12.sp)),
+                ),
+              );
+            }
+          }
+        },
+      ),
+    ];
   }
 
 
@@ -391,20 +437,18 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: _showWelcomeStory,
             isNew: !_hasSeenWelcomeStory,
           ),
-          // Add more stories here in the future
           _buildStoryItem(
             title: 'Features',
             icon: Icons.star,
             color: Colors.orange,
             onTap: () {
+              final stories = _getStoriesList(1);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const StoryViewScreen(
-                    title: 'Features',
-                    message: 'Discover powerful features:\n\n• Security Protection\n• Threat Detection\n• Data Encryption\n• Real-time Monitoring',
-                    icon: Icons.star,
-                    backgroundColor: Colors.orange,
+                  builder: (context) => StoryViewScreen(
+                    stories: stories,
+                    initialIndex: 1,
                   ),
                 ),
               );
@@ -415,14 +459,30 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.lightbulb,
             color: Colors.amber,
             onTap: () {
+              final stories = _getStoriesList(2);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const StoryViewScreen(
-                    title: 'Tips',
-                    message: 'Best Practices:\n\n• Keep your app updated\n• Use strong passwords\n• Enable all security features\n• Regular security checks',
-                    icon: Icons.lightbulb,
-                    backgroundColor: Colors.amber,
+                  builder: (context) => StoryViewScreen(
+                    stories: stories,
+                    initialIndex: 2,
+                  ),
+                ),
+              );
+            },
+          ),
+          _buildStoryItem(
+            title: 'Telegram',
+            icon: Icons.telegram,
+            color: const Color(0xFF0088cc),
+            onTap: () {
+              final stories = _getStoriesList(3);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StoryViewScreen(
+                    stories: stories,
+                    initialIndex: 3,
                   ),
                 ),
               );

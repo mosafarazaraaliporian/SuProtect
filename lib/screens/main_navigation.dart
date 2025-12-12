@@ -64,16 +64,18 @@ class _MainNavigationState extends State<MainNavigation> {
             index: _currentIndex,
             children: _screens,
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: _onUploadPressed,
-            backgroundColor: primaryColor,
-            elevation: 8,
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 28.sp,
-            ),
-          ),
+          floatingActionButton: _currentIndex == 1 // Only show on Home (index 1)
+              ? FloatingActionButton(
+                  onPressed: _onUploadPressed,
+                  backgroundColor: primaryColor,
+                  elevation: 8,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 28.sp,
+                  ),
+                )
+              : null,
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
