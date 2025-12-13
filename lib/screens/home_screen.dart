@@ -111,14 +111,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkTour() async {
+    LoggerService.logMethod('HomeScreen', '_checkTour');
     final prefs = await SharedPreferences.getInstance();
     _hasSeenTour = prefs.getBool('has_seen_home_tour') ?? false;
+    LoggerService.d('HomeScreen', 'Has seen tour: $_hasSeenTour');
     // Don't show tour automatically - it will be shown after welcome story is seen (only once)
   }
 
   void _showTour() {
+    LoggerService.logMethod('HomeScreen', '_showTour');
+    LoggerService.logUserAction('show_tour');
+    
     // Close any existing dialog first
     if (_tourDialogContext != null) {
+      LoggerService.w('HomeScreen', 'Closing existing tour dialog');
       Navigator.of(_tourDialogContext!).pop();
       _tourDialogContext = null;
     }
@@ -126,29 +132,45 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _tourStep = 0;
     });
+    LoggerService.d('HomeScreen', 'Tour step reset to 0');
     
     // Wait a bit for the UI to be ready
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
+        LoggerService.d('HomeScreen', 'Starting tour step after delay');
         _showTourStep();
+      } else {
+        LoggerService.w('HomeScreen', 'Widget not mounted, cannot start tour');
       }
     });
   }
 
   void _closeTourDialog() {
     if (_tourDialogContext != null) {
+      LoggerService.d('HomeScreen', 'Closing tour dialog');
       Navigator.of(_tourDialogContext!).pop();
       _tourDialogContext = null;
+    } else {
+      LoggerService.v('HomeScreen', 'No tour dialog to close');
     }
   }
 
   void _showTourStep() async {
-    if (!mounted) return;
+    LoggerService.logMethod('HomeScreen', '_showTourStep', {
+      'tourStep': _tourStep,
+      'mounted': mounted,
+    });
+    
+    if (!mounted) {
+      LoggerService.w('HomeScreen', 'Widget not mounted, cannot show tour step');
+      return;
+    }
     
     // Close previous dialog if exists
     _closeTourDialog();
     
     if (_tourStep >= 3) {
+      LoggerService.i('HomeScreen', 'Tour completed, marking as seen');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('has_seen_home_tour', true);
       if (mounted) {
@@ -168,29 +190,37 @@ class _HomeScreenState extends State<HomeScreen> {
         title = 'Stories';
         description = 'These are important news and notifications';
         targetKey = _storiesKey;
+        LoggerService.d('HomeScreen', 'Tour step 0: Stories section');
         break;
       case 1:
         title = 'Your Apps';
         description = 'This shows your apps here';
         targetKey = _welcomeKey;
+        LoggerService.d('HomeScreen', 'Tour step 1: Welcome section');
         break;
       case 2:
         title = 'Upload Button';
         description = 'Tap the + button to upload your APK file for protection.';
         targetKey = widget.fabKey;
+        LoggerService.d('HomeScreen', 'Tour step 2: Upload button (FAB)');
         break;
     }
 
+    LoggerService.d('HomeScreen', 'Target key: ${targetKey?.hashCode}, Context: ${targetKey?.currentContext != null}');
+
     // Wait a bit more if targetKey is not ready
     if (targetKey?.currentContext == null || !mounted) {
+      LoggerService.w('HomeScreen', 'Target key context is null, waiting...');
       // Try a few times before giving up
       int attempts = 0;
       while (attempts < 5 && mounted && (targetKey?.currentContext == null)) {
         await Future.delayed(const Duration(milliseconds: 200));
         attempts++;
+        LoggerService.v('HomeScreen', 'Waiting for target key, attempt $attempts/5');
       }
       
       if (targetKey?.currentContext == null || !mounted) {
+        LoggerService.w('HomeScreen', 'Target key still not found after $attempts attempts, skipping step');
         // Skip this step if still not found
         if (mounted) {
           setState(() {
@@ -202,11 +232,21 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         return;
       }
+      LoggerService.i('HomeScreen', 'Target key found after $attempts attempts');
     }
 
     try {
+      LoggerService.d('HomeScreen', 'Getting render box for target key');
       final RenderBox? renderBox = targetKey?.currentContext?.findRenderObject() as RenderBox?;
+      
+      if (renderBox == null) {
+        LoggerService.e('HomeScreen', 'RenderBox is null');
+      } else if (!renderBox.hasSize) {
+        LoggerService.e('HomeScreen', 'RenderBox has no size');
+      }
+      
       if (renderBox == null || !renderBox.hasSize || !mounted) {
+        LoggerService.w('HomeScreen', 'Cannot get render box, skipping step');
         // Skip this step
         if (mounted) {
           setState(() {
@@ -221,19 +261,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final position = renderBox.localToGlobal(Offset.zero);
       final size = renderBox.size;
-      if (!mounted) return;
+      LoggerService.d('HomeScreen', 'Render box position: $position, size: $size');
+      
+      if (!mounted) {
+        LoggerService.w('HomeScreen', 'Widget not mounted before showing dialog');
+        return;
+      }
 
+      LoggerService.i('HomeScreen', 'Showing tour dialog for step $_tourStep');
       showDialog(
         context: context,
         barrierDismissible: false,
         barrierColor: Colors.black.withOpacity(0.7),
         builder: (dialogContext) {
-          if (!mounted) return const SizedBox();
+          if (!mounted) {
+            LoggerService.w('HomeScreen', 'Widget not mounted in dialog builder');
+            return const SizedBox();
+          }
           _tourDialogContext = dialogContext;
+          LoggerService.d('HomeScreen', 'Dialog context set');
           
           final screenSize = MediaQuery.of(dialogContext).size;
           final screenHeight = screenSize.height;
           final screenWidth = screenSize.width;
+          LoggerService.v('HomeScreen', 'Screen size: ${screenSize.width}x${screenSize.height}');
           
           // Calculate tooltip position
           double tooltipTop;
@@ -350,11 +401,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (_tourStep > 0)
                                 TextButton(
                                   onPressed: () {
+                                    LoggerService.logUserAction('tour_previous', {'step': _tourStep});
                                     _closeTourDialog();
                                     if (mounted) {
                                       setState(() {
                                         _tourStep--;
                                       });
+                                      LoggerService.d('HomeScreen', 'Tour step changed to: ${_tourStep - 1}');
                                       Future.delayed(const Duration(milliseconds: 300), () {
                                         if (mounted) _showTourStep();
                                       });
@@ -384,25 +437,39 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               ElevatedButton(
                                 onPressed: () async {
+                                  LoggerService.logUserAction('tour_next', {
+                                    'currentStep': _tourStep,
+                                    'isFinish': _tourStep == 2,
+                                  });
                                   _closeTourDialog();
-                                  if (!mounted) return;
+                                  if (!mounted) {
+                                    LoggerService.w('HomeScreen', 'Widget not mounted, cannot proceed');
+                                    return;
+                                  }
                                   
                                   setState(() {
                                     _tourStep++;
                                   });
+                                  LoggerService.d('HomeScreen', 'Tour step incremented to: $_tourStep');
+                                  
                                   await Future.delayed(const Duration(milliseconds: 300));
                                   if (mounted) {
                                     if (_tourStep < 3) {
+                                      LoggerService.d('HomeScreen', 'Showing next tour step');
                                       _showTourStep();
                                     } else {
+                                      LoggerService.i('HomeScreen', 'Tour finished, saving state');
                                       final prefs = await SharedPreferences.getInstance();
                                       await prefs.setBool('has_seen_home_tour', true);
                                       if (mounted) {
                                         setState(() {
                                           _hasSeenTour = true;
                                         });
+                                        LoggerService.i('HomeScreen', 'Tour marked as seen');
                                       }
                                     }
+                                  } else {
+                                    LoggerService.w('HomeScreen', 'Widget not mounted after delay');
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -429,19 +496,22 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle error gracefully
+      LoggerService.e('HomeScreen', 'Tour guide error', e, stackTrace);
       debugPrint('Tour guide error: $e');
       _closeTourDialog();
       if (mounted) {
         // If error occurs, mark tour as seen to prevent infinite loop
         if (_tourStep >= 2) {
+          LoggerService.w('HomeScreen', 'Error at step $_tourStep, marking tour as seen');
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('has_seen_home_tour', true);
           setState(() {
             _hasSeenTour = true;
           });
         } else {
+          LoggerService.w('HomeScreen', 'Error at step $_tourStep, skipping to next step');
           setState(() {
             _tourStep++;
           });
