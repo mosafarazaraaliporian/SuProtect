@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'dart:math' as math;
 import '../providers/auth_provider.dart';
 import '../services/logger_service.dart';
 import 'login_screen.dart';
@@ -16,19 +17,21 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _lineController;
-  late AnimationController _fadeController;
-  late Animation<double> _topLineAnimation;
-  late Animation<double> _bottomLineAnimation;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
+  late AnimationController _sDrawController;
+  late AnimationController _glowController;
+  late AnimationController _textController;
+  late AnimationController _particleController;
+  
+  late Animation<double> _sDrawAnimation;
+  late Animation<double> _glowAnimation;
+  late Animation<double> _textFadeAnimation;
+  late Animation<double> _textSlideAnimation;
 
   @override
   void initState() {
     super.initState();
     LoggerService.logMethod('SplashScreen', 'initState');
 
-    // Set system UI overlay style to match app color
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Color(0xFF9C88FF),
@@ -38,82 +41,83 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Line animation controller for S lines
-    _lineController = AnimationController(
+    _sDrawController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
     );
 
-    // Fade and scale animation controller
-    _fadeController = AnimationController(
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _textController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
 
-    // Top line animation (from top to S)
-    _topLineAnimation = Tween<double>(
+    _particleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat();
+
+    _sDrawAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
-        parent: _lineController,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
+        parent: _sDrawController,
+        curve: Curves.easeInOut,
       ),
     );
 
-    // Bottom line animation (from bottom to S)
-    _bottomLineAnimation = Tween<double>(
-      begin: 0.0,
+    _glowAnimation = Tween<double>(
+      begin: 0.3,
       end: 1.0,
     ).animate(
       CurvedAnimation(
-        parent: _lineController,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
+        parent: _glowController,
+        curve: Curves.easeInOut,
       ),
     );
 
-    // Fade and scale animations
-    _fadeAnimation = Tween<double>(
+    _textFadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
-        parent: _fadeController,
+        parent: _textController,
         curve: Curves.easeIn,
       ),
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
+    _textSlideAnimation = Tween<double>(
+      begin: 50.0,
+      end: 0.0,
     ).animate(
       CurvedAnimation(
-        parent: _fadeController,
+        parent: _textController,
         curve: Curves.easeOut,
       ),
     );
 
-    // Start animations
-    _lineController.forward();
-    LoggerService.d('SplashScreen', 'Line animation started');
+    _sDrawController.forward();
+    LoggerService.d('SplashScreen', 'S drawing animation started');
     
-    // Start fade animation after line animation
-    Future.delayed(const Duration(milliseconds: 1200), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
-        _fadeController.forward();
-        LoggerService.d('SplashScreen', 'Fade animation started');
+        _textController.forward();
+        LoggerService.d('SplashScreen', 'Text animation started');
       }
     });
 
-    // Navigate after delay
     _navigateToNext();
   }
 
   Future<void> _navigateToNext() async {
     LoggerService.logMethod('SplashScreen', '_navigateToNext');
     
-    // Wait for animation and check auth
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(milliseconds: 3500));
 
     if (!mounted) {
       LoggerService.w('SplashScreen', 'Widget not mounted, skipping navigation');
@@ -121,38 +125,53 @@ class _SplashScreenState extends State<SplashScreen>
     }
 
     LoggerService.d('SplashScreen', 'Checking auth status');
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.checkAuthStatus();
+    
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.checkAuthStatus();
 
-    if (!mounted) {
-      LoggerService.w('SplashScreen', 'Widget not mounted after auth check');
-      return;
-    }
+      if (!mounted) {
+        LoggerService.w('SplashScreen', 'Widget not mounted after auth check');
+        return;
+      }
 
-    if (authProvider.isLoggedIn) {
-      LoggerService.logNavigation('SplashScreen', 'MainNavigation');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MainNavigation(),
-        ),
-      );
-    } else {
-      LoggerService.logNavigation('SplashScreen', 'LoginScreen');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
-      );
+      if (authProvider.isLoggedIn) {
+        LoggerService.logNavigation('SplashScreen', 'MainNavigation');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainNavigation(),
+          ),
+        );
+      } else {
+        LoggerService.logNavigation('SplashScreen', 'LoginScreen');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+      }
+    } catch (e) {
+      LoggerService.e('SplashScreen', 'Navigation error: $e');
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+      }
     }
   }
 
   @override
   void dispose() {
     LoggerService.logMethod('SplashScreen', 'dispose');
-    _lineController.dispose();
-    _fadeController.dispose();
+    _sDrawController.dispose();
+    _glowController.dispose();
+    _textController.dispose();
+    _particleController.dispose();
     super.dispose();
   }
 
@@ -172,81 +191,136 @@ class _SplashScreenState extends State<SplashScreen>
                 end: Alignment.bottomRight,
                 colors: [
                   const Color(0xFF9C88FF),
-                  const Color(0xFF9C88FF).withOpacity(0.8),
+                  const Color(0xFF8B7AEE),
                   const Color(0xFF7B68EE),
+                  const Color(0xFF6A5ACD),
                 ],
               ),
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Animated S with lines
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Text "SuProtect"
-                      FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: ScaleTransition(
-                          scale: _scaleAnimation,
-                          child: Text(
-                            'SuProtect',
-                            style: TextStyle(
-                              fontSize: 48.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 3,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: Offset(0, 4.h),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+            child: Stack(
+              children: [
+                AnimatedBuilder(
+                  animation: _particleController,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      size: Size.infinite,
+                      painter: ParticlesPainter(
+                        progress: _particleController.value,
                       ),
-                      // Animated lines for S
+                    );
+                  },
+                ),
+                
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _glowAnimation,
+                            builder: (context, child) {
+                              return Container(
+                                width: 200.w,
+                                height: 200.h,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(
+                                        0.1 * _glowAnimation.value,
+                                      ),
+                                      blurRadius: 80 * _glowAnimation.value,
+                                      spreadRadius: 20 * _glowAnimation.value,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          
+                          AnimatedBuilder(
+                            animation: _sDrawAnimation,
+                            builder: (context, child) {
+                              return CustomPaint(
+                                size: Size(150.w, 180.h),
+                                painter: AnimatedSPainter(
+                                  progress: _sDrawAnimation.value,
+                                  glowIntensity: _glowAnimation.value,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      
+                      SizedBox(height: 40.h),
+                      
                       AnimatedBuilder(
-                        animation: _lineController,
+                        animation: _textController,
                         builder: (context, child) {
-                          return CustomPaint(
-                            size: Size(300.w, 200.h),
-                            painter: SLinesPainter(
-                              topLineProgress: _topLineAnimation.value,
-                              bottomLineProgress: _bottomLineAnimation.value,
+                          return Opacity(
+                            opacity: _textFadeAnimation.value,
+                            child: Transform.translate(
+                              offset: Offset(0, _textSlideAnimation.value),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(width: 40.w),
+                                  Text(
+                                    'uProtect',
+                                    style: TextStyle(
+                                      fontSize: 42.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      letterSpacing: 2,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 10,
+                                          offset: Offset(0, 4.h),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      
+                      SizedBox(height: 30.h),
+                      
+                      AnimatedBuilder(
+                        animation: _textController,
+                        builder: (context, child) {
+                          return Opacity(
+                            opacity: _textFadeAnimation.value,
+                            child: Container(
+                              width: 100.w,
+                              height: 4.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(0.5),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
                       ),
                     ],
                   ),
-                  
-                  SizedBox(height: 40.h),
-                  
-                  // Underline
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Container(
-                      width: 100.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.5),
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -255,64 +329,125 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-// Custom painter for S lines (top and bottom)
-class SLinesPainter extends CustomPainter {
-  final double topLineProgress;
-  final double bottomLineProgress;
+class AnimatedSPainter extends CustomPainter {
+  final double progress;
+  final double glowIntensity;
 
-  SLinesPainter({
-    required this.topLineProgress,
-    required this.bottomLineProgress,
+  AnimatedSPainter({
+    required this.progress,
+    required this.glowIntensity,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 5
+      ..strokeWidth = 8
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
+    final glowPaint = Paint()
+      ..color = Colors.white.withOpacity(0.3 * glowIntensity)
+      ..strokeWidth = 16
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+
+    final path = Path();
     
-    // Calculate S position (first letter of "SuProtect")
-    // S is approximately at the start of the text
-    final sCenterX = centerX - 80; // Approximate position of S
-    final sTopY = centerY - 20; // Top of S
-    final sBottomY = centerY + 20; // Bottom of S
-    final lineLength = 60.0;
+    final centerX = size.width / 2;
+    final topY = size.height * 0.2;
+    final middleY = size.height * 0.5;
+    final bottomY = size.height * 0.8;
+    final curveOffset = size.width * 0.25;
 
-    // Top line - from top of screen to top of S
-    if (topLineProgress > 0) {
-      final startY = 0.0;
-      final endY = sTopY;
-      final currentEndY = startY + (endY - startY) * topLineProgress;
-      
-      canvas.drawLine(
-        Offset(sCenterX, startY),
-        Offset(sCenterX, currentEndY),
-        paint,
-      );
+    path.moveTo(centerX + curveOffset, topY);
+    path.cubicTo(
+      centerX + curveOffset, topY,
+      centerX - curveOffset, topY + (middleY - topY) * 0.3,
+      centerX - curveOffset, middleY - (middleY - topY) * 0.2,
+    );
+    path.cubicTo(
+      centerX - curveOffset, middleY,
+      centerX + curveOffset * 0.8, middleY,
+      centerX + curveOffset * 0.8, middleY,
+    );
+    path.cubicTo(
+      centerX + curveOffset * 0.8, middleY,
+      centerX - curveOffset, middleY + (bottomY - middleY) * 0.3,
+      centerX - curveOffset, bottomY,
+    );
+
+    final totalLength = _calculatePathLength(path);
+    final drawLength = totalLength * progress;
+
+    final pathMetrics = path.computeMetrics().first;
+    final extractPath = pathMetrics.extractPath(0, drawLength);
+
+    canvas.drawPath(extractPath, glowPaint);
+    canvas.drawPath(extractPath, paint);
+
+    if (progress > 0.9) {
+      final double sparkleProgress = (progress - 0.9) / 0.1;
+      _drawSparkles(canvas, size, sparkleProgress);
     }
+  }
 
-    // Bottom line - from bottom of screen to bottom of S
-    if (bottomLineProgress > 0) {
-      final startY = size.height;
-      final endY = sBottomY;
-      final currentEndY = startY - (startY - endY) * bottomLineProgress;
-      
-      canvas.drawLine(
-        Offset(sCenterX, startY),
-        Offset(sCenterX, currentEndY),
-        paint,
-      );
+  double _calculatePathLength(Path path) {
+    final pathMetrics = path.computeMetrics().first;
+    return pathMetrics.length;
+  }
+
+  void _drawSparkles(Canvas canvas, Size size, double progress) {
+    final sparklePaint = Paint()
+      ..color = Colors.white.withOpacity(progress * 0.8)
+      ..style = PaintingStyle.fill;
+
+    final sparkles = [
+      Offset(size.width * 0.7, size.height * 0.25),
+      Offset(size.width * 0.3, size.height * 0.5),
+      Offset(size.width * 0.75, size.height * 0.75),
+    ];
+
+    for (var sparkle in sparkles) {
+      canvas.drawCircle(sparkle, 3 * progress, sparklePaint);
     }
   }
 
   @override
-  bool shouldRepaint(SLinesPainter oldDelegate) {
-    return oldDelegate.topLineProgress != topLineProgress ||
-        oldDelegate.bottomLineProgress != bottomLineProgress;
+  bool shouldRepaint(AnimatedSPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.glowIntensity != glowIntensity;
+  }
+}
+
+class ParticlesPainter extends CustomPainter {
+  final double progress;
+
+  ParticlesPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.1)
+      ..style = PaintingStyle.fill;
+
+    final random = math.Random(42);
+    
+    for (int i = 0; i < 30; i++) {
+      final x = random.nextDouble() * size.width;
+      final baseY = random.nextDouble() * size.height;
+      final y = (baseY + (progress * 100)) % size.height;
+      final radius = random.nextDouble() * 2 + 1;
+      
+      canvas.drawCircle(Offset(x, y), radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(ParticlesPainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }
