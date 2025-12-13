@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -93,14 +94,18 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
   }
 
   void _handleActionTap() {
+    debugPrint('[_handleActionTap] Called');
     final story = widget.stories[_currentIndex];
+    debugPrint('[_handleActionTap] Story has action: ${story.onActionTap != null}');
     if (story.onActionTap != null) {
+      debugPrint('[_handleActionTap] Executing action...');
       // Pause story progress
       setState(() {
         _isPaused = true;
       });
       // Execute action
       story.onActionTap!();
+      debugPrint('[_handleActionTap] Action executed');
       // Resume after a delay
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
@@ -109,6 +114,8 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
           });
         }
       });
+    } else {
+      debugPrint('[_handleActionTap] No action to execute');
     }
   }
 
@@ -204,149 +211,155 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   ),
                 ),
               ),
-              // Content area - NO gesture detection here
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 120.w,
-                        height: 120.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 20,
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          story.icon,
-                          size: 70.sp,
-                          color: story.backgroundColor,
-                        ),
-                      ),
-                      SizedBox(height: 40.h),
-                      Text(
-                        story.title,
-                        style: TextStyle(
-                          fontSize: 32.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black54,
-                              blurRadius: 10,
-                              offset: Offset(0, 5.h),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        story.message,
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          color: Colors.white.withOpacity(0.9),
-                          letterSpacing: 0.5,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      if (story.onActionTap != null) ...[
-                        SizedBox(height: 50.h),
-                        // Action button - completely separate layer
-                        GestureDetector(
-                          onTap: _handleActionTap,
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20.w),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 32.w,
-                              vertical: 18.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.4),
-                                  blurRadius: 25,
-                                  spreadRadius: 8,
-                                  offset: Offset(0, 10.h),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  story.actionIcon ?? Icons.telegram,
-                                  size: 30.sp,
-                                  color: story.backgroundColor,
-                                ),
-                                SizedBox(width: 12.w),
-                                Text(
-                                  story.actionLabel ?? 'Join Telegram',
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: story.backgroundColor,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ],
-                            ),
+              // Content area - wrapped in IgnorePointer to prevent navigation interference
+              IgnorePointer(
+                ignoring: false, // Content should receive taps
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 120.w,
+                          height: 120.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 20,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            story.icon,
+                            size: 70.sp,
+                            color: story.backgroundColor,
                           ),
                         ),
+                        SizedBox(height: 40.h),
+                        Text(
+                          story.title,
+                          style: TextStyle(
+                            fontSize: 32.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black54,
+                                blurRadius: 10,
+                                offset: Offset(0, 5.h),
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 20.h),
+                        Text(
+                          story.message,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            color: Colors.white.withOpacity(0.9),
+                            letterSpacing: 0.5,
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (story.onActionTap != null) ...[
+                          SizedBox(height: 50.h),
+                          // Action button - Material with InkWell for proper tap handling
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                debugPrint('[StoryView] Telegram button tapped!');
+                                _handleActionTap();
+                              },
+                              borderRadius: BorderRadius.circular(30.r),
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20.w),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 32.w,
+                                  vertical: 18.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.4),
+                                      blurRadius: 25,
+                                      spreadRadius: 8,
+                                      offset: Offset(0, 10.h),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      story.actionIcon ?? Icons.telegram,
+                                      size: 30.sp,
+                                      color: story.backgroundColor,
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Text(
+                                      story.actionLabel ?? 'Join Telegram',
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: story.backgroundColor,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
-              // Navigation - ONLY on left and right edges, NOT on center
+              // Navigation - ONLY on left and right edges (20% each), center 60% is blocked
               Positioned.fill(
                 child: Row(
                   children: [
-                    // Left 25% - Previous
+                    // Left 20% - Previous story
                     GestureDetector(
                       onTap: _previousStory,
+                      behavior: HitTestBehavior.opaque,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
+                        width: MediaQuery.of(context).size.width * 0.2,
                         color: Colors.transparent,
                       ),
                     ),
-                    // Center 50% - NO navigation (content area)
+                    // Center 60% - BLOCKED (content area) - use IgnorePointer to block navigation
                     Expanded(
-                      child: Container(
-                        color: Colors.transparent,
+                      child: IgnorePointer(
+                        ignoring: true, // Block all navigation in center
+                        child: Container(
+                          color: Colors.transparent,
+                        ),
                       ),
                     ),
-                    // Right 25% - Next
+                    // Right 20% - Next story
                     GestureDetector(
                       onTap: _nextStory,
+                      behavior: HitTestBehavior.opaque,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
+                        width: MediaQuery.of(context).size.width * 0.2,
                         color: Colors.transparent,
                       ),
                     ),
                   ],
-                ),
-              ),
-              // Pause/Resume gesture - tap anywhere to pause
-              Positioned.fill(
-                child: GestureDetector(
-                  onTapDown: (_) => setState(() => _isPaused = true),
-                  onTapUp: (_) => setState(() => _isPaused = false),
-                  onTapCancel: () => setState(() => _isPaused = false),
-                  behavior: HitTestBehavior.translucent,
                 ),
               ),
               // Close button

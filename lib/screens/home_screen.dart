@@ -540,19 +540,23 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     
     // Show tour after story is viewed ONLY if not seen before
+    // Use WidgetsBinding to ensure widget is built before showing tour
     if (mounted) {
       final hasSeenTour = await prefs.getBool('has_seen_home_tour') ?? false;
       if (!hasSeenTour && !_hasSeenTour) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) {
-            // Check again before showing
-            SharedPreferences.getInstance().then((p) async {
-              final stillNotSeen = await p.getBool('has_seen_home_tour') ?? false;
-              if (mounted && !stillNotSeen) {
-                _showTour();
-              }
-            });
-          }
+        // Wait for next frame to ensure widget is fully built
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Future.delayed(const Duration(milliseconds: 800), () {
+            if (mounted) {
+              SharedPreferences.getInstance().then((p) async {
+                final stillNotSeen = await p.getBool('has_seen_home_tour') ?? false;
+                if (mounted && !stillNotSeen) {
+                  LoggerService.d('HomeScreen', 'Starting tour after welcome story');
+                  _showTour();
+                }
+              });
+            }
+          });
         });
       }
     }
