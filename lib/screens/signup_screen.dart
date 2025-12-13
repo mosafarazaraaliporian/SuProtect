@@ -216,7 +216,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
               ),
               filled: true,
               fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             ),
             validator: validator,
           ),
@@ -285,7 +285,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                       // Form content
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
                           child: Form(
                             key: _formKey,
                             child: Column(
@@ -300,36 +300,36 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                     return Transform.scale(
                                       scale: value,
                                       child: Container(
-                                        width: 120.w,
-                                        height: 120.w,
-                                        margin: EdgeInsets.only(bottom: 32.h),
+                                        width: 80.w,
+                                        height: 80.w,
+                                        margin: EdgeInsets.only(bottom: 24.h),
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.bottomRight,
                                             colors: [
-                                              Colors.white.withOpacity(0.4),
-                                              Colors.white.withOpacity(0.2),
-                                              Colors.white.withOpacity(0.1),
+                                              Colors.white.withOpacity(0.3),
+                                              Colors.white.withOpacity(0.15),
+                                              Colors.white.withOpacity(0.08),
                                             ],
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.white.withOpacity(0.3),
-                                              blurRadius: 30,
-                                              spreadRadius: 5,
+                                              color: Colors.white.withOpacity(0.2),
+                                              blurRadius: 20,
+                                              spreadRadius: 3,
                                             ),
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(0.2),
-                                              blurRadius: 20,
-                                              spreadRadius: 2,
+                                              color: Colors.black.withOpacity(0.15),
+                                              blurRadius: 15,
+                                              spreadRadius: 1,
                                             ),
                                           ],
                                         ),
                                         child: Icon(
                                           Icons.person_add_outlined,
-                                          size: 60.sp,
+                                          size: 40.sp,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -339,31 +339,31 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                 Text(
                                   'Join SuProtect',
                                   style: TextStyle(
-                                    fontSize: 36.sp,
+                                    fontSize: 28.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
-                                    letterSpacing: 1.2,
+                                    letterSpacing: 0.8,
                                     shadows: [
                                       Shadow(
                                         color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 10,
+                                        blurRadius: 8,
                                         offset: Offset(0, 2.h),
                                       ),
                                     ],
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(height: 12.h),
+                                SizedBox(height: 8.h),
                                 Text(
-                                  'Create your account and get started',
+                                  'Create your account',
                                   style: TextStyle(
-                                    fontSize: 15.sp,
-                                    color: Colors.white.withOpacity(0.95),
+                                    fontSize: 13.sp,
+                                    color: Colors.white.withOpacity(0.9),
                                     fontWeight: FontWeight.w400,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(height: 40.h),
+                                SizedBox(height: 32.h),
                                 // Username field
                                 _buildTextField(
                                   controller: _usernameController,
@@ -443,10 +443,10 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 24.h),
-                                // Sign up button
-                                Container(
-                                  height: 58.h,
+                            SizedBox(height: 20.h),
+                            // Sign up button
+                            Container(
+                              height: 50.h,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20.r),
                                     gradient: LinearGradient(
@@ -505,39 +505,39 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                           ),
                                   ),
                                 ),
-                                SizedBox(height: 32.h),
-                                // Divider
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Divider(
-                                        color: Colors.white.withOpacity(0.3),
-                                        thickness: 1,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                      child: Text(
-                                        'OR',
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: Colors.white.withOpacity(0.7),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Divider(
-                                        color: Colors.white.withOpacity(0.3),
-                                        thickness: 1,
-                                      ),
-                                    ),
-                                  ],
+                            SizedBox(height: 24.h),
+                            // Divider
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.3),
+                                    thickness: 1,
+                                  ),
                                 ),
-                                SizedBox(height: 32.h),
-                                // Login link
-                                Container(
-                                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                      color: Colors.white.withOpacity(0.7),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.3),
+                                    thickness: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 24.h),
+                            // Login link
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20.r),
                                     border: Border.all(
@@ -560,21 +560,21 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                         onTap: () {
                                           Navigator.pop(context);
                                         },
-                                        child: Text(
-                                          'Login',
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            decoration: TextDecoration.underline,
-                                            decorationThickness: 2,
-                                          ),
+                                      child: Text(
+                                        'Login',
+                                        style: TextStyle(
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          decoration: TextDecoration.underline,
+                                          decorationThickness: 1.5,
                                         ),
+                                      ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 40.h),
+                                SizedBox(height: 20.h),
                               ],
                             ),
                           ),

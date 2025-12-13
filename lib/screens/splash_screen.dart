@@ -222,17 +222,17 @@ class _SplashScreenState extends State<SplashScreen>
                             animation: _glowAnimation,
                             builder: (context, child) {
                               return Container(
-                                width: 200.w,
-                                height: 200.h,
+                                width: 140.w,
+                                height: 140.h,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.white.withOpacity(
-                                        0.1 * _glowAnimation.value,
+                                        0.08 * _glowAnimation.value,
                                       ),
-                                      blurRadius: 80 * _glowAnimation.value,
-                                      spreadRadius: 20 * _glowAnimation.value,
+                                      blurRadius: 60 * _glowAnimation.value,
+                                      spreadRadius: 15 * _glowAnimation.value,
                                     ),
                                   ],
                                 ),
@@ -244,7 +244,7 @@ class _SplashScreenState extends State<SplashScreen>
                             animation: _sDrawAnimation,
                             builder: (context, child) {
                               return CustomPaint(
-                                size: Size(150.w, 180.h),
+                                size: Size(100.w, 120.h),
                                 painter: AnimatedSPainter(
                                   progress: _sDrawAnimation.value,
                                   glowIntensity: _glowAnimation.value,
@@ -255,7 +255,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ],
                       ),
                       
-                      SizedBox(height: 40.h),
+                      SizedBox(height: 28.h),
                       
                       AnimatedBuilder(
                         animation: _textController,
@@ -268,19 +268,19 @@ class _SplashScreenState extends State<SplashScreen>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(width: 40.w),
+                                  SizedBox(width: 30.w),
                                   Text(
                                     'uProtect',
                                     style: TextStyle(
-                                      fontSize: 42.sp,
+                                      fontSize: 32.sp,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
-                                      letterSpacing: 2,
+                                      letterSpacing: 1.5,
                                       shadows: [
                                         Shadow(
-                                          color: Colors.black.withOpacity(0.3),
-                                          blurRadius: 10,
-                                          offset: Offset(0, 4.h),
+                                          color: Colors.black.withOpacity(0.25),
+                                          blurRadius: 8,
+                                          offset: Offset(0, 3.h),
                                         ),
                                       ],
                                     ),
@@ -292,7 +292,7 @@ class _SplashScreenState extends State<SplashScreen>
                         },
                       ),
                       
-                      SizedBox(height: 30.h),
+                      SizedBox(height: 20.h),
                       
                       AnimatedBuilder(
                         animation: _textController,
@@ -300,16 +300,16 @@ class _SplashScreenState extends State<SplashScreen>
                           return Opacity(
                             opacity: _textFadeAnimation.value,
                             child: Container(
-                              width: 100.w,
-                              height: 4.h,
+                              width: 80.w,
+                              height: 3.h,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(2),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.white.withOpacity(0.5),
-                                    blurRadius: 8,
-                                    spreadRadius: 2,
+                                    color: Colors.white.withOpacity(0.4),
+                                    blurRadius: 6,
+                                    spreadRadius: 1,
                                   ),
                                 ],
                               ),
@@ -342,14 +342,14 @@ class AnimatedSPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 8
+      ..strokeWidth = 6
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final glowPaint = Paint()
-      ..color = Colors.white.withOpacity(0.3 * glowIntensity)
-      ..strokeWidth = 16
+      ..color = Colors.white.withOpacity(0.25 * glowIntensity)
+      ..strokeWidth = 12
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round

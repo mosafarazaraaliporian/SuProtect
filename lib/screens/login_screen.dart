@@ -221,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
               filled: true,
               fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             ),
             validator: validator,
           ),
@@ -259,14 +259,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   position: _slideAnimation,
                   child: Center(
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 10.h),
                             // Animated Icon
                             TweenAnimationBuilder<double>(
                               tween: Tween(begin: 0.0, end: 1.0),
@@ -276,71 +276,71 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 return Transform.scale(
                                   scale: value,
                                   child: Container(
-                                    width: 120.w,
-                                    height: 120.w,
+                                    width: 80.w,
+                                    height: 80.w,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       gradient: LinearGradient(
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                         colors: [
-                                          Colors.white.withOpacity(0.4),
-                                          Colors.white.withOpacity(0.2),
-                                          Colors.white.withOpacity(0.1),
+                                          Colors.white.withOpacity(0.3),
+                                          Colors.white.withOpacity(0.15),
+                                          Colors.white.withOpacity(0.08),
                                         ],
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.white.withOpacity(0.3),
-                                          blurRadius: 30,
-                                          spreadRadius: 5,
+                                          color: Colors.white.withOpacity(0.2),
+                                          blurRadius: 20,
+                                          spreadRadius: 3,
                                         ),
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 20,
-                                          spreadRadius: 2,
+                                          color: Colors.black.withOpacity(0.15),
+                                          blurRadius: 15,
+                                          spreadRadius: 1,
                                         ),
                                       ],
                                     ),
                                     child: Icon(
                                       Icons.lock_outline,
-                                      size: 60.sp,
+                                      size: 40.sp,
                                       color: Colors.white,
                                     ),
                                   ),
                                 );
                               },
                             ),
-                            SizedBox(height: 40.h),
+                            SizedBox(height: 24.h),
                             // Title
                             Text(
                               'Welcome Back',
                               style: TextStyle(
-                                fontSize: 36.sp,
+                                fontSize: 28.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
-                                letterSpacing: 1.2,
+                                letterSpacing: 0.8,
                                 shadows: [
                                   Shadow(
                                     color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 10,
+                                    blurRadius: 8,
                                     offset: Offset(0, 2.h),
                                   ),
                                 ],
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 12.h),
+                            SizedBox(height: 8.h),
                             Text(
-                              'Sign in to continue your journey',
+                              'Sign in to continue',
                               style: TextStyle(
-                                fontSize: 15.sp,
-                                color: Colors.white.withOpacity(0.95),
+                                fontSize: 13.sp,
+                                color: Colors.white.withOpacity(0.9),
                                 fontWeight: FontWeight.w400,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 50.h),
+                            SizedBox(height: 32.h),
                             // Email field
                             _buildTextField(
                               controller: _emailController,
@@ -399,10 +399,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                               ),
                             ),
-                            SizedBox(height: 24.h),
-                            // Login button
-                            Container(
-                              height: 58.h,
+                        SizedBox(height: 20.h),
+                        // Login button
+                        Container(
+                          height: 50.h,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20.r),
                                 gradient: LinearGradient(
@@ -461,7 +461,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       ),
                               ),
                             ),
-                            SizedBox(height: 32.h),
+                            SizedBox(height: 24.h),
                             // Divider
                             Row(
                               children: [
@@ -472,11 +472,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                  padding: EdgeInsets.symmetric(horizontal: 12.w),
                                   child: Text(
                                     'OR',
                                     style: TextStyle(
-                                      fontSize: 12.sp,
+                                      fontSize: 11.sp,
                                       color: Colors.white.withOpacity(0.7),
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -490,10 +490,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                               ],
                             ),
-                            SizedBox(height: 32.h),
+                            SizedBox(height: 24.h),
                             // Sign up link
                             Container(
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20.r),
                                 border: Border.all(
@@ -524,18 +524,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     child: Text(
                                       'Sign Up',
                                       style: TextStyle(
-                                        fontSize: 14.sp,
+                                        fontSize: 13.sp,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                         decoration: TextDecoration.underline,
-                                        decorationThickness: 2,
+                                        decorationThickness: 1.5,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(height: 40.h),
+                            SizedBox(height: 20.h),
                           ],
                         ),
                       ),
