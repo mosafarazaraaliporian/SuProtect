@@ -17,15 +17,20 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _sDrawController;
+  late AnimationController _sController;
+  late AnimationController _uController;
+  late AnimationController _protectController;
   late AnimationController _glowController;
-  late AnimationController _textController;
   late AnimationController _particleController;
+  late AnimationController _waveController;
   
   late Animation<double> _sDrawAnimation;
-  late Animation<double> _glowAnimation;
-  late Animation<double> _textFadeAnimation;
-  late Animation<double> _textSlideAnimation;
+  late Animation<double> _sScaleAnimation;
+  late Animation<double> _uFadeAnimation;
+  late Animation<double> _uSlideAnimation;
+  late Animation<double> _protectRevealAnimation;
+  late Animation<double> _protectGlowAnimation;
+  late Animation<double> _glowPulse;
 
   @override
   void initState() {
@@ -34,122 +39,114 @@ class _SplashScreenState extends State<SplashScreen>
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFF9C88FF),
+        statusBarColor: Color(0xFF1a0033),
         statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFF9C88FF),
+        systemNavigationBarColor: Color(0xFF1a0033),
         systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
 
-    _sDrawController = AnimationController(
+    _sController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _uController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _protectController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
     );
 
     _glowController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
     )..repeat(reverse: true);
 
-    _textController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
     _particleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat();
+
+    _waveController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
     )..repeat();
 
-    _sDrawAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _sDrawController,
-        curve: Curves.easeInOut,
-      ),
+    _sDrawAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _sController, curve: Curves.easeInOut),
     );
 
-    _glowAnimation = Tween<double>(
-      begin: 0.3,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _glowController,
-        curve: Curves.easeInOut,
-      ),
+    _sScaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _sController, curve: Curves.elasticOut),
     );
 
-    _textFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _textController,
-        curve: Curves.easeIn,
-      ),
+    _uFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _uController, curve: Curves.easeIn),
     );
 
-    _textSlideAnimation = Tween<double>(
-      begin: 50.0,
-      end: 0.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _textController,
-        curve: Curves.easeOut,
-      ),
+    _uSlideAnimation = Tween<double>(begin: 30.0, end: 0.0).animate(
+      CurvedAnimation(parent: _uController, curve: Curves.easeOut),
     );
 
-    _sDrawController.forward();
-    LoggerService.d('SplashScreen', 'S drawing animation started');
-    
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    _protectRevealAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _protectController, curve: Curves.easeOutCubic),
+    );
+
+    _protectGlowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _protectController, curve: Curves.easeIn),
+    );
+
+    _glowPulse = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+
+    _startAnimations();
+    _navigateToNext();
+  }
+
+  void _startAnimations() {
+    _sController.forward().then((_) {
       if (mounted) {
-        _textController.forward();
-        LoggerService.d('SplashScreen', 'Text animation started');
+        _uController.forward().then((_) {
+          if (mounted) {
+            _protectController.forward();
+          }
+        });
       }
     });
-
-    _navigateToNext();
   }
 
   Future<void> _navigateToNext() async {
     LoggerService.logMethod('SplashScreen', '_navigateToNext');
     
-    await Future.delayed(const Duration(milliseconds: 3500));
+    await Future.delayed(const Duration(milliseconds: 4000));
 
     if (!mounted) {
       LoggerService.w('SplashScreen', 'Widget not mounted, skipping navigation');
       return;
     }
 
-    LoggerService.d('SplashScreen', 'Checking auth status');
-    
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.checkAuthStatus();
 
-      if (!mounted) {
-        LoggerService.w('SplashScreen', 'Widget not mounted after auth check');
-        return;
-      }
+      if (!mounted) return;
 
       if (authProvider.isLoggedIn) {
         LoggerService.logNavigation('SplashScreen', 'MainNavigation');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const MainNavigation(),
-          ),
+          MaterialPageRoute(builder: (context) => const MainNavigation()),
         );
       } else {
         LoggerService.logNavigation('SplashScreen', 'LoginScreen');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
     } catch (e) {
@@ -157,9 +154,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
     }
@@ -168,10 +163,12 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     LoggerService.logMethod('SplashScreen', 'dispose');
-    _sDrawController.dispose();
+    _sController.dispose();
+    _uController.dispose();
+    _protectController.dispose();
     _glowController.dispose();
-    _textController.dispose();
     _particleController.dispose();
+    _waveController.dispose();
     super.dispose();
   }
 
@@ -183,28 +180,40 @@ class _SplashScreenState extends State<SplashScreen>
       splitScreenMode: true,
       builder: (context, child) {
         return Scaffold(
-          backgroundColor: const Color(0xFF9C88FF),
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
+                  const Color(0xFF1a0033),
+                  const Color(0xFF2d1b4e),
+                  const Color(0xFF4a2c6f),
+                  const Color(0xFF6a3d91),
                   const Color(0xFF9C88FF),
-                  const Color(0xFF8B7AEE),
-                  const Color(0xFF7B68EE),
-                  const Color(0xFF6A5ACD),
                 ],
               ),
             ),
             child: Stack(
               children: [
                 AnimatedBuilder(
+                  animation: _waveController,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      size: Size.infinite,
+                      painter: WaveBackgroundPainter(
+                        progress: _waveController.value,
+                      ),
+                    );
+                  },
+                ),
+                
+                AnimatedBuilder(
                   animation: _particleController,
                   builder: (context, child) {
                     return CustomPaint(
                       size: Size.infinite,
-                      painter: ParticlesPainter(
+                      painter: EnhancedParticlesPainter(
                         progress: _particleController.value,
                       ),
                     );
@@ -215,39 +224,90 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Stack(
-                        alignment: Alignment.center,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          AnimatedBuilder(
-                            animation: _glowAnimation,
-                            builder: (context, child) {
-                              return Container(
-                                width: 140.w,
-                                height: 140.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.white.withOpacity(
-                                        0.08 * _glowAnimation.value,
-                                      ),
-                                      blurRadius: 60 * _glowAnimation.value,
-                                      spreadRadius: 15 * _glowAnimation.value,
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              AnimatedBuilder(
+                                animation: _glowPulse,
+                                builder: (context, child) {
+                                  return Container(
+                                    width: 120.w * _glowPulse.value,
+                                    height: 120.h * _glowPulse.value,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFF9C88FF).withOpacity(0.3),
+                                          blurRadius: 60 * _glowPulse.value,
+                                          spreadRadius: 20 * _glowPulse.value,
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
+                                  );
+                                },
+                              ),
+                              
+                              AnimatedBuilder(
+                                animation: Listenable.merge([_sDrawAnimation, _sScaleAnimation]),
+                                builder: (context, child) {
+                                  return Transform.scale(
+                                    scale: _sScaleAnimation.value,
+                                    child: CustomPaint(
+                                      size: Size(80.w, 100.h),
+                                      painter: AnimatedSPainter(
+                                        progress: _sDrawAnimation.value,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                           
+                          SizedBox(width: 8.w),
+                          
                           AnimatedBuilder(
-                            animation: _sDrawAnimation,
+                            animation: Listenable.merge([_uFadeAnimation, _uSlideAnimation]),
                             builder: (context, child) {
-                              return CustomPaint(
-                                size: Size(100.w, 120.h),
-                                painter: AnimatedSPainter(
-                                  progress: _sDrawAnimation.value,
-                                  glowIntensity: _glowAnimation.value,
+                              return Transform.translate(
+                                offset: Offset(_uSlideAnimation.value, 0),
+                                child: Opacity(
+                                  opacity: _uFadeAnimation.value,
+                                  child: Stack(
+                                    children: [
+                                      Text(
+                                        'u',
+                                        style: TextStyle(
+                                          fontSize: 72.sp,
+                                          fontWeight: FontWeight.bold,
+                                          foreground: Paint()
+                                            ..style = PaintingStyle.stroke
+                                            ..strokeWidth = 3
+                                            ..color = Colors.white.withOpacity(0.5),
+                                        ),
+                                      ),
+                                      ShaderMask(
+                                        shaderCallback: (bounds) => LinearGradient(
+                                          colors: [
+                                            const Color(0xFFFFFFFF),
+                                            const Color(0xFF9C88FF),
+                                          ],
+                                        ).createShader(bounds),
+                                        child: Text(
+                                          'u',
+                                          style: TextStyle(
+                                            fontSize: 72.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },
@@ -255,36 +315,64 @@ class _SplashScreenState extends State<SplashScreen>
                         ],
                       ),
                       
-                      SizedBox(height: 28.h),
+                      SizedBox(height: 30.h),
                       
                       AnimatedBuilder(
-                        animation: _textController,
+                        animation: Listenable.merge([_protectRevealAnimation, _protectGlowAnimation]),
                         builder: (context, child) {
-                          return Opacity(
-                            opacity: _textFadeAnimation.value,
-                            child: Transform.translate(
-                              offset: Offset(0, _textSlideAnimation.value),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          return ClipRect(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              widthFactor: _protectRevealAnimation.value,
+                              child: Stack(
                                 children: [
-                                  SizedBox(width: 30.w),
-                                  Text(
-                                    'uProtect',
-                                    style: TextStyle(
-                                      fontSize: 32.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      letterSpacing: 1.5,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black.withOpacity(0.25),
-                                          blurRadius: 8,
-                                          offset: Offset(0, 3.h),
+                                  CustomPaint(
+                                    painter: ProtectGlowPainter(
+                                      intensity: _protectGlowAnimation.value,
+                                    ),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                                      child: ShaderMask(
+                                        shaderCallback: (bounds) => LinearGradient(
+                                          colors: [
+                                            const Color(0xFFFFD700),
+                                            const Color(0xFFFFFFFF),
+                                            const Color(0xFF9C88FF),
+                                            const Color(0xFFFFD700),
+                                          ],
+                                          stops: const [0.0, 0.3, 0.7, 1.0],
+                                        ).createShader(bounds),
+                                        child: Text(
+                                          'PROTECT',
+                                          style: TextStyle(
+                                            fontSize: 36.sp,
+                                            fontWeight: FontWeight.w900,
+                                            letterSpacing: 8,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                color: const Color(0xFF9C88FF).withOpacity(0.8),
+                                                blurRadius: 20,
+                                              ),
+                                              Shadow(
+                                                color: Colors.white.withOpacity(0.5),
+                                                blurRadius: 10,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
+                                  
+                                  if (_protectGlowAnimation.value > 0.8)
+                                    Positioned.fill(
+                                      child: CustomPaint(
+                                        painter: SparklesPainter(
+                                          progress: (_protectGlowAnimation.value - 0.8) / 0.2,
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -292,24 +380,32 @@ class _SplashScreenState extends State<SplashScreen>
                         },
                       ),
                       
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 40.h),
                       
                       AnimatedBuilder(
-                        animation: _textController,
+                        animation: _protectRevealAnimation,
                         builder: (context, child) {
                           return Opacity(
-                            opacity: _textFadeAnimation.value,
+                            opacity: _protectRevealAnimation.value,
                             child: Container(
-                              width: 80.w,
-                              height: 3.h,
+                              width: 120.w * _protectRevealAnimation.value,
+                              height: 4.h,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.transparent,
+                                    const Color(0xFFFFD700),
+                                    Colors.white,
+                                    const Color(0xFFFFD700),
+                                    Colors.transparent,
+                                  ],
+                                ),
                                 borderRadius: BorderRadius.circular(2),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.white.withOpacity(0.4),
-                                    blurRadius: 6,
-                                    spreadRadius: 1,
+                                    color: Colors.white.withOpacity(0.6),
+                                    blurRadius: 12,
+                                    spreadRadius: 2,
                                   ),
                                 ],
                               ),
@@ -331,123 +427,185 @@ class _SplashScreenState extends State<SplashScreen>
 
 class AnimatedSPainter extends CustomPainter {
   final double progress;
-  final double glowIntensity;
 
-  AnimatedSPainter({
-    required this.progress,
-    required this.glowIntensity,
-  });
+  AnimatedSPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 6
+      ..strokeWidth = 12
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final glowPaint = Paint()
-      ..color = Colors.white.withOpacity(0.25 * glowIntensity)
-      ..strokeWidth = 12
+      ..strokeWidth = 24
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
+
+    final gradient = LinearGradient(
+      colors: [
+        const Color(0xFFFFD700),
+        const Color(0xFFFFFFFF),
+        const Color(0xFF9C88FF),
+      ],
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    paint.shader = gradient;
+    glowPaint.color = const Color(0xFF9C88FF).withOpacity(0.6);
 
     final path = Path();
+    final w = size.width;
+    final h = size.height;
     
-    final centerX = size.width / 2;
-    final topY = size.height * 0.2;
-    final middleY = size.height * 0.5;
-    final bottomY = size.height * 0.8;
-    final curveOffset = size.width * 0.25;
-
-    path.moveTo(centerX + curveOffset, topY);
-    path.cubicTo(
-      centerX + curveOffset, topY,
-      centerX - curveOffset, topY + (middleY - topY) * 0.3,
-      centerX - curveOffset, middleY - (middleY - topY) * 0.2,
-    );
-    path.cubicTo(
-      centerX - curveOffset, middleY,
-      centerX + curveOffset * 0.8, middleY,
-      centerX + curveOffset * 0.8, middleY,
-    );
-    path.cubicTo(
-      centerX + curveOffset * 0.8, middleY,
-      centerX - curveOffset, middleY + (bottomY - middleY) * 0.3,
-      centerX - curveOffset, bottomY,
-    );
-
-    final totalLength = _calculatePathLength(path);
-    final drawLength = totalLength * progress;
+    path.moveTo(w * 0.75, h * 0.15);
+    path.cubicTo(w * 0.75, h * 0.15, w * 0.15, h * 0.25, w * 0.15, h * 0.45);
+    path.cubicTo(w * 0.15, h * 0.5, w * 0.85, h * 0.5, w * 0.85, h * 0.5);
+    path.cubicTo(w * 0.85, h * 0.55, w * 0.25, h * 0.7, w * 0.25, h * 0.85);
 
     final pathMetrics = path.computeMetrics().first;
-    final extractPath = pathMetrics.extractPath(0, drawLength);
+    final extractPath = pathMetrics.extractPath(0, pathMetrics.length * progress);
 
     canvas.drawPath(extractPath, glowPaint);
     canvas.drawPath(extractPath, paint);
 
-    if (progress > 0.9) {
-      final double sparkleProgress = (progress - 0.9) / 0.1;
-      _drawSparkles(canvas, size, sparkleProgress);
-    }
-  }
-
-  double _calculatePathLength(Path path) {
-    final pathMetrics = path.computeMetrics().first;
-    return pathMetrics.length;
-  }
-
-  void _drawSparkles(Canvas canvas, Size size, double progress) {
-    final sparklePaint = Paint()
-      ..color = Colors.white.withOpacity(progress * 0.8)
-      ..style = PaintingStyle.fill;
-
-    final sparkles = [
-      Offset(size.width * 0.7, size.height * 0.25),
-      Offset(size.width * 0.3, size.height * 0.5),
-      Offset(size.width * 0.75, size.height * 0.75),
-    ];
-
-    for (var sparkle in sparkles) {
-      canvas.drawCircle(sparkle, 3 * progress, sparklePaint);
+    if (progress > 0.95) {
+      final sparkle = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(w * 0.75, h * 0.15), 4, sparkle);
+      canvas.drawCircle(Offset(w * 0.25, h * 0.85), 4, sparkle);
     }
   }
 
   @override
-  bool shouldRepaint(AnimatedSPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.glowIntensity != glowIntensity;
-  }
+  bool shouldRepaint(AnimatedSPainter oldDelegate) => oldDelegate.progress != progress;
 }
 
-class ParticlesPainter extends CustomPainter {
+class ProtectGlowPainter extends CustomPainter {
+  final double intensity;
+
+  ProtectGlowPainter({required this.intensity});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (intensity > 0) {
+      final paint = Paint()
+        ..shader = RadialGradient(
+          colors: [
+            Color(0xFFFFD700).withOpacity(0.3 * intensity),
+            Colors.transparent,
+          ],
+        ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 30 * intensity);
+
+      canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(ProtectGlowPainter oldDelegate) => oldDelegate.intensity != intensity;
+}
+
+class SparklesPainter extends CustomPainter {
   final double progress;
 
-  ParticlesPainter({required this.progress});
+  SparklesPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withOpacity(progress)
       ..style = PaintingStyle.fill;
+
+    final sparkles = [
+      Offset(size.width * 0.2, size.height * 0.3),
+      Offset(size.width * 0.5, size.height * 0.2),
+      Offset(size.width * 0.8, size.height * 0.4),
+      Offset(size.width * 0.3, size.height * 0.7),
+      Offset(size.width * 0.7, size.height * 0.8),
+    ];
+
+    for (var pos in sparkles) {
+      canvas.drawCircle(pos, 2 * progress, paint);
+      
+      canvas.drawLine(
+        Offset(pos.dx - 6 * progress, pos.dy),
+        Offset(pos.dx + 6 * progress, pos.dy),
+        paint..strokeWidth = 1,
+      );
+      canvas.drawLine(
+        Offset(pos.dx, pos.dy - 6 * progress),
+        Offset(pos.dx, pos.dy + 6 * progress),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(SparklesPainter oldDelegate) => oldDelegate.progress != progress;
+}
+
+class WaveBackgroundPainter extends CustomPainter {
+  final double progress;
+
+  WaveBackgroundPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < 3; i++) {
+      final path = Path();
+      final offset = (progress + i * 0.3) % 1.0;
+      final y = size.height * 0.5 + math.sin(offset * 2 * math.pi) * 50;
+      
+      paint.color = Color(0xFF9C88FF).withOpacity(0.05 - i * 0.01);
+      
+      path.moveTo(0, y);
+      for (double x = 0; x <= size.width; x += 10) {
+        final waveY = y + math.sin((x / size.width + offset) * 4 * math.pi) * 30;
+        path.lineTo(x, waveY);
+      }
+      path.lineTo(size.width, size.height);
+      path.lineTo(0, size.height);
+      path.close();
+      
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(WaveBackgroundPainter oldDelegate) => oldDelegate.progress != progress;
+}
+
+class EnhancedParticlesPainter extends CustomPainter {
+  final double progress;
+
+  EnhancedParticlesPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
 
     final random = math.Random(42);
     
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 50; i++) {
       final x = random.nextDouble() * size.width;
+      final speed = random.nextDouble() * 0.5 + 0.5;
       final baseY = random.nextDouble() * size.height;
-      final y = (baseY + (progress * 100)) % size.height;
-      final radius = random.nextDouble() * 2 + 1;
+      final y = (baseY + (progress * 200 * speed)) % size.height;
+      final radius = random.nextDouble() * 2.5 + 0.5;
+      final opacity = random.nextDouble() * 0.3 + 0.1;
       
+      paint.color = Colors.white.withOpacity(opacity);
       canvas.drawCircle(Offset(x, y), radius, paint);
     }
   }
 
   @override
-  bool shouldRepaint(ParticlesPainter oldDelegate) {
-    return oldDelegate.progress != progress;
-  }
+  bool shouldRepaint(EnhancedParticlesPainter oldDelegate) => oldDelegate.progress != progress;
 }
