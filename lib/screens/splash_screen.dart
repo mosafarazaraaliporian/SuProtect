@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/logger_service.dart';
 import 'login_screen.dart';
 import 'main_navigation.dart';
 
@@ -17,15 +18,15 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _lineController;
   late AnimationController _fadeController;
-  late Animation<double> _line1Animation;
-  late Animation<double> _line2Animation;
-  late Animation<double> _line3Animation;
+  late Animation<double> _topLineAnimation;
+  late Animation<double> _bottomLineAnimation;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    LoggerService.logMethod('SplashScreen', 'initState');
 
     // Set system UI overlay style to match app color
     SystemChrome.setSystemUIOverlayStyle(
@@ -37,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Line animation controller
+    // Line animation controller for S lines
     _lineController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -49,34 +50,25 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 800),
     );
 
-    // Line animations (drawing effect)
-    _line1Animation = Tween<double>(
+    // Top line animation (from top to S)
+    _topLineAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
         parent: _lineController,
-        curve: const Interval(0.0, 0.33, curve: Curves.easeInOut),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
       ),
     );
 
-    _line2Animation = Tween<double>(
+    // Bottom line animation (from bottom to S)
+    _bottomLineAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
         parent: _lineController,
-        curve: const Interval(0.33, 0.66, curve: Curves.easeInOut),
-      ),
-    );
-
-    _line3Animation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _lineController,
-        curve: const Interval(0.66, 1.0, curve: Curves.easeInOut),
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
       ),
     );
 
@@ -103,11 +95,13 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Start animations
     _lineController.forward();
+    LoggerService.d('SplashScreen', 'Line animation started');
     
     // Start fade animation after line animation
     Future.delayed(const Duration(milliseconds: 1200), () {
       if (mounted) {
         _fadeController.forward();
+        LoggerService.d('SplashScreen', 'Fade animation started');
       }
     });
 
@@ -116,17 +110,27 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToNext() async {
+    LoggerService.logMethod('SplashScreen', '_navigateToNext');
+    
     // Wait for animation and check auth
     await Future.delayed(const Duration(seconds: 3));
 
-    if (!mounted) return;
+    if (!mounted) {
+      LoggerService.w('SplashScreen', 'Widget not mounted, skipping navigation');
+      return;
+    }
 
+    LoggerService.d('SplashScreen', 'Checking auth status');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.checkAuthStatus();
 
-    if (!mounted) return;
+    if (!mounted) {
+      LoggerService.w('SplashScreen', 'Widget not mounted after auth check');
+      return;
+    }
 
     if (authProvider.isLoggedIn) {
+      LoggerService.logNavigation('SplashScreen', 'MainNavigation');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -134,6 +138,7 @@ class _SplashScreenState extends State<SplashScreen>
         ),
       );
     } else {
+      LoggerService.logNavigation('SplashScreen', 'LoginScreen');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -145,6 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
+    LoggerService.logMethod('SplashScreen', 'dispose');
     _lineController.dispose();
     _fadeController.dispose();
     super.dispose();
@@ -175,31 +181,16 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Animated lines (Zoro style)
-                  AnimatedBuilder(
-                    animation: _lineController,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        size: Size(200.w, 200.h),
-                        painter: ZoroLinesPainter(
-                          line1Progress: _line1Animation.value,
-                          line2Progress: _line2Animation.value,
-                          line3Progress: _line3Animation.value,
-                        ),
-                      );
-                    },
-                  ),
-                  
-                  SizedBox(height: 40.h),
-                  
-                  // Logo text with fade and scale
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Column(
-                        children: [
-                          Text(
+                  // Animated S with lines
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Text "SuProtect"
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: ScaleTransition(
+                          scale: _scaleAnimation,
+                          child: Text(
                             'SuProtect',
                             style: TextStyle(
                               fontSize: 48.sp,
@@ -215,21 +206,40 @@ class _SplashScreenState extends State<SplashScreen>
                               ],
                             ),
                           ),
-                          SizedBox(height: 12.h),
-                          Container(
-                            width: 100.w,
-                            height: 4.h,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.5),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                              ],
+                        ),
+                      ),
+                      // Animated lines for S
+                      AnimatedBuilder(
+                        animation: _lineController,
+                        builder: (context, child) {
+                          return CustomPaint(
+                            size: Size(300.w, 200.h),
+                            painter: SLinesPainter(
+                              topLineProgress: _topLineAnimation.value,
+                              bottomLineProgress: _bottomLineAnimation.value,
                             ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 40.h),
+                  
+                  // Underline
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Container(
+                      width: 100.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.5),
+                            blurRadius: 8,
+                            spreadRadius: 2,
                           ),
                         ],
                       ),
@@ -245,86 +255,64 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-// Custom painter for Zoro-style lines
-class ZoroLinesPainter extends CustomPainter {
-  final double line1Progress;
-  final double line2Progress;
-  final double line3Progress;
+// Custom painter for S lines (top and bottom)
+class SLinesPainter extends CustomPainter {
+  final double topLineProgress;
+  final double bottomLineProgress;
 
-  ZoroLinesPainter({
-    required this.line1Progress,
-    required this.line2Progress,
-    required this.line3Progress,
+  SLinesPainter({
+    required this.topLineProgress,
+    required this.bottomLineProgress,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 4
+      ..strokeWidth = 5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final centerX = size.width / 2;
     final centerY = size.height / 2;
-    final lineLength = size.width * 0.4;
+    
+    // Calculate S position (first letter of "SuProtect")
+    // S is approximately at the start of the text
+    final sCenterX = centerX - 80; // Approximate position of S
+    final sTopY = centerY - 20; // Top of S
+    final sBottomY = centerY + 20; // Bottom of S
+    final lineLength = 60.0;
 
-    // Line 1 - Top left to center
-    if (line1Progress > 0) {
-      final startX = centerX - lineLength;
-      final startY = centerY - lineLength * 0.6;
-      final endX = centerX;
-      final endY = centerY;
-      
-      final currentEndX = startX + (endX - startX) * line1Progress;
-      final currentEndY = startY + (endY - startY) * line1Progress;
+    // Top line - from top of screen to top of S
+    if (topLineProgress > 0) {
+      final startY = 0.0;
+      final endY = sTopY;
+      final currentEndY = startY + (endY - startY) * topLineProgress;
       
       canvas.drawLine(
-        Offset(startX, startY),
-        Offset(currentEndX, currentEndY),
+        Offset(sCenterX, startY),
+        Offset(sCenterX, currentEndY),
         paint,
       );
     }
 
-    // Line 2 - Center to bottom right
-    if (line2Progress > 0) {
-      final startX = centerX;
-      final startY = centerY;
-      final endX = centerX + lineLength;
-      final endY = centerY + lineLength * 0.6;
-      
-      final currentEndX = startX + (endX - startX) * line2Progress;
-      final currentEndY = startY + (endY - startY) * line2Progress;
+    // Bottom line - from bottom of screen to bottom of S
+    if (bottomLineProgress > 0) {
+      final startY = size.height;
+      final endY = sBottomY;
+      final currentEndY = startY - (startY - endY) * bottomLineProgress;
       
       canvas.drawLine(
-        Offset(startX, startY),
-        Offset(currentEndX, currentEndY),
-        paint,
-      );
-    }
-
-    // Line 3 - Bottom left to top right (diagonal)
-    if (line3Progress > 0) {
-      final startX = centerX - lineLength * 0.7;
-      final startY = centerY + lineLength * 0.5;
-      final endX = centerX + lineLength * 0.7;
-      final endY = centerY - lineLength * 0.5;
-      
-      final currentEndX = startX + (endX - startX) * line3Progress;
-      final currentEndY = startY + (endY - startY) * line3Progress;
-      
-      canvas.drawLine(
-        Offset(startX, startY),
-        Offset(currentEndX, currentEndY),
+        Offset(sCenterX, startY),
+        Offset(sCenterX, currentEndY),
         paint,
       );
     }
   }
 
   @override
-  bool shouldRepaint(ZoroLinesPainter oldDelegate) {
-    return oldDelegate.line1Progress != line1Progress ||
-        oldDelegate.line2Progress != line2Progress ||
-        oldDelegate.line3Progress != line3Progress;
+  bool shouldRepaint(SLinesPainter oldDelegate) {
+    return oldDelegate.topLineProgress != topLineProgress ||
+        oldDelegate.bottomLineProgress != bottomLineProgress;
   }
 }

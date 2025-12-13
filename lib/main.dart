@@ -8,18 +8,26 @@ import 'providers/theme_provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/firebase_service.dart';
 import 'services/notification_service.dart';
+import 'services/logger_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LoggerService.i('App', 'Starting SuProtect app...');
   
   // Initialize Firebase
+  LoggerService.d('App', 'Initializing Firebase...');
   await Firebase.initializeApp();
+  LoggerService.i('App', 'Firebase initialized');
   
   // Initialize Firebase Services
+  LoggerService.d('App', 'Initializing Firebase Services...');
   await FirebaseService().initialize();
+  LoggerService.i('App', 'Firebase Services initialized');
   
   // Initialize Notification Service
+  LoggerService.d('App', 'Initializing Notification Service...');
   await NotificationService().initialize();
+  LoggerService.i('App', 'Notification Service initialized');
   
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
@@ -31,6 +39,7 @@ void main() async {
     ),
   );
   
+  LoggerService.i('App', 'App initialization complete, running app...');
   runApp(const MyApp());
 }
 
@@ -39,10 +48,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LoggerService.logMethod('MyApp', 'build');
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()..checkAuthStatus()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) {
+          LoggerService.d('MyApp', 'Creating AuthProvider');
+          return AuthProvider()..checkAuthStatus();
+        }),
+        ChangeNotifierProvider(create: (_) {
+          LoggerService.d('MyApp', 'Creating ThemeProvider');
+          return ThemeProvider();
+        }),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/logger_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -24,6 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
+    LoggerService.logMethod('SignUpScreen', 'initState');
     // Set system UI overlay style to match app color
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -45,7 +47,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _handleSignUp() async {
+    LoggerService.logUserAction('signup_attempt');
     if (!_formKey.currentState!.validate()) {
+      LoggerService.w('SignUpScreen', 'Form validation failed');
       return;
     }
 
@@ -53,6 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = true;
     });
 
+    LoggerService.d('SignUpScreen', 'Attempting signup for: ${_emailController.text.trim()}');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.signUp(
       _usernameController.text.trim(),
@@ -67,9 +72,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!mounted) return;
 
     if (success) {
+      LoggerService.i('SignUpScreen', 'Signup successful');
       Navigator.pop(context);
       // Navigation will be handled by main.dart based on auth state
     } else {
+      LoggerService.e('SignUpScreen', 'Signup failed');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Sign up failed. Please try again.', style: TextStyle(fontSize: 12.sp)),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/firebase_service.dart';
+import '../services/logger_service.dart';
 import 'signup_screen.dart';
 import 'main_navigation.dart';
 
@@ -24,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    LoggerService.logMethod('LoginScreen', 'initState');
     // Set system UI overlay style to match app color
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -43,7 +45,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    LoggerService.logUserAction('login_attempt');
     if (!_formKey.currentState!.validate()) {
+      LoggerService.w('LoginScreen', 'Form validation failed');
       return;
     }
 
@@ -51,6 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
+    LoggerService.d('LoginScreen', 'Attempting login for: ${_emailController.text.trim()}');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.login(
       _emailController.text.trim(),
@@ -64,12 +69,14 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      LoggerService.i('LoginScreen', 'Login successful');
       // Log successful login to Firebase Analytics
       await FirebaseService().logEvent('login', {
         'method': 'email',
       });
       // Navigate to main navigation
       if (mounted) {
+        LoggerService.logNavigation('LoginScreen', 'MainNavigation');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -78,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } else {
+      LoggerService.e('LoginScreen', 'Login failed');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Login failed. Please check your credentials.', style: TextStyle(fontSize: 12.sp)),

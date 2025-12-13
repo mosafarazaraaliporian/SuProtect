@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
+import '../services/logger_service.dart';
 import 'story_view_screen.dart';
 import 'upload_apk_screen.dart';
 
@@ -36,6 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    LoggerService.logMethod('HomeScreen', 'initState', {
+      'uploadFileName': widget.uploadFileName,
+    });
     _checkWelcomeStory();
     _checkTour();
     // Set system UI overlay style
@@ -49,12 +53,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     // Log screen view to Firebase Analytics
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      LoggerService.logUserAction('screen_view', {'screen': 'home'});
       FirebaseService().logEvent('screen_view', {
         'screen_name': 'home',
         'screen_class': 'HomeScreen',
       });
       // If upload file name is provided, start upload
-      if (widget.uploadFileName != null && !_isUploading && _uploadingFileName == null) {
+      if (widget.uploadFileName != null && 
+          !_isUploading && 
+          !_isProcessing && 
+          _uploadingFileName == null) {
+        LoggerService.i('HomeScreen', 'Starting upload for: ${widget.uploadFileName}');
         _uploadingFileName = widget.uploadFileName;
         _startFakeUpload();
       }
@@ -68,7 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (widget.uploadFileName != null && 
         widget.uploadFileName != oldWidget.uploadFileName &&
         !_isUploading && 
+        !_isProcessing &&
         _uploadingFileName == null) {
+      LoggerService.i('HomeScreen', 'Starting new upload for: ${widget.uploadFileName}');
       _uploadingFileName = widget.uploadFileName;
       _startFakeUpload();
     }
@@ -76,19 +87,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    LoggerService.logMethod('HomeScreen', 'dispose');
     _uploadTimer?.cancel();
     _closeTourDialog();
     super.dispose();
   }
 
   Future<void> _checkWelcomeStory() async {
+    LoggerService.logMethod('HomeScreen', '_checkWelcomeStory');
     final prefs = await SharedPreferences.getInstance();
     _hasSeenWelcomeStory = prefs.getBool('has_seen_welcome_story') ?? false;
+    LoggerService.d('HomeScreen', 'Has seen welcome story: $_hasSeenWelcomeStory');
     
     if (!_hasSeenWelcomeStory && mounted) {
       // Show welcome story after a short delay
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
+          LoggerService.logUserAction('show_welcome_story');
           _showWelcomeStory();
         }
       });
@@ -524,8 +539,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _startFakeUpload() {
+    LoggerService.logMethod('HomeScreen', '_startFakeUpload', {
+      'fileName': _uploadingFileName,
+    });
+    
+    // Reset any previous state
+    _uploadTimer?.cancel();
+    
     setState(() {
       _isUploading = true;
+      _isProcessing = false;
       _uploadProgress = 0.0;
     });
 
@@ -556,6 +579,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _completeUpload() {
+    LoggerService.logMethod('HomeScreen', '_completeUpload', {
+      'fileName': _uploadingFileName,
+    });
+    
     setState(() {
       _isUploading = false;
       _isProcessing = true;
@@ -575,7 +602,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    // Keep processing state - don't reset, just show processing message
+    // Reset state after processing (allow new uploads)
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        LoggerService.d('HomeScreen', 'Resetting upload state after processing');
+        setState(() {
+          _isProcessing = false;
+          _uploadProgress = 0.0;
+          _uploadingFileName = null;
+        });
+      }
+    });
   }
 
   void _cancelUpload() {
