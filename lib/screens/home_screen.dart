@@ -206,48 +206,35 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
     }
 
-    LoggerService.d('HomeScreen', 'Target key: ${targetKey?.hashCode}, Context: ${targetKey?.currentContext != null}');
+    // Wait for next frame to ensure widget is fully built
+    await Future.delayed(const Duration(milliseconds: 150));
+    if (!mounted) return;
 
-    // Wait a bit more if targetKey is not ready
+    // Wait for target key to be available with more attempts
+    int attempts = 0;
+    while (attempts < 15 && mounted && (targetKey?.currentContext == null)) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      attempts++;
+    }
+    
     if (targetKey?.currentContext == null || !mounted) {
-      LoggerService.w('HomeScreen', 'Target key context is null, waiting...');
-      // Try a few times before giving up
-      int attempts = 0;
-      while (attempts < 5 && mounted && (targetKey?.currentContext == null)) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        attempts++;
-        LoggerService.v('HomeScreen', 'Waiting for target key, attempt $attempts/5');
+      LoggerService.w('HomeScreen', 'Target key not found after $attempts attempts, skipping step');
+      if (mounted) {
+        setState(() {
+          _tourStep++;
+        });
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) _showTourStep();
+        });
       }
-      
-      if (targetKey?.currentContext == null || !mounted) {
-        LoggerService.w('HomeScreen', 'Target key still not found after $attempts attempts, skipping step');
-        // Skip this step if still not found
-        if (mounted) {
-          setState(() {
-            _tourStep++;
-          });
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted) _showTourStep();
-          });
-        }
-        return;
-      }
-      LoggerService.i('HomeScreen', 'Target key found after $attempts attempts');
+      return;
     }
 
     try {
-      LoggerService.d('HomeScreen', 'Getting render box for target key');
-      final RenderBox? renderBox = targetKey?.currentContext?.findRenderObject() as RenderBox?;
-      
-      if (renderBox == null) {
-        LoggerService.e('HomeScreen', 'RenderBox is null');
-      } else if (!renderBox.hasSize) {
-        LoggerService.e('HomeScreen', 'RenderBox has no size');
-      }
-      
-      if (renderBox == null || !renderBox.hasSize || !mounted) {
-        LoggerService.w('HomeScreen', 'Cannot get render box, skipping step');
-        // Skip this step
+      // Get render box - NEW APPROACH: use context directly
+      final BuildContext? targetContext = targetKey?.currentContext;
+      if (targetContext == null || !mounted) {
+        LoggerService.w('HomeScreen', 'Target context is null');
         if (mounted) {
           setState(() {
             _tourStep++;
@@ -259,68 +246,68 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      final position = renderBox.localToGlobal(Offset.zero);
-      final size = renderBox.size;
-      LoggerService.d('HomeScreen', 'Render box position: $position, size: $size');
+      final RenderBox? renderBox = targetContext.findRenderObject() as RenderBox?;
       
-      if (!mounted) {
-        LoggerService.w('HomeScreen', 'Widget not mounted before showing dialog');
+      if (renderBox == null || !renderBox.hasSize || !mounted) {
+        LoggerService.w('HomeScreen', 'Cannot get render box, skipping step');
+        if (mounted) {
+          setState(() {
+            _tourStep++;
+          });
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) _showTourStep();
+          });
+        }
         return;
       }
 
-      LoggerService.i('HomeScreen', 'Showing tour dialog for step $_tourStep');
+      // Get position relative to screen - NEW APPROACH: use localToGlobal correctly
+      final Offset position = renderBox.localToGlobal(Offset.zero);
+      final Size size = renderBox.size;
+      
+      LoggerService.d('HomeScreen', 'Element position: $position, size: $size');
+      
+      if (!mounted) return;
+
+      // Show dialog with correct positioning
       showDialog(
         context: context,
         barrierDismissible: false,
-        barrierColor: Colors.black.withOpacity(0.7),
+        barrierColor: Colors.black.withOpacity(0.75),
         builder: (dialogContext) {
-          if (!mounted) {
-            LoggerService.w('HomeScreen', 'Widget not mounted in dialog builder');
-            return const SizedBox();
-          }
+          if (!mounted) return const SizedBox();
+          
           _tourDialogContext = dialogContext;
-          LoggerService.d('HomeScreen', 'Dialog context set');
           
           final screenSize = MediaQuery.of(dialogContext).size;
           final screenHeight = screenSize.height;
           final screenWidth = screenSize.width;
-          LoggerService.v('HomeScreen', 'Screen size: ${screenSize.width}x${screenSize.height}');
+          
+          // NEW APPROACH: Use actual position directly, with padding
+          final padding = 8.0;
+          final highlightLeft = (position.dx - padding).clamp(0.0, screenWidth);
+          final highlightTop = (position.dy - padding).clamp(0.0, screenHeight);
+          final highlightRight = (position.dx + size.width + padding).clamp(0.0, screenWidth);
+          final highlightBottom = (position.dy + size.height + padding).clamp(0.0, screenHeight);
+          final highlightWidth = highlightRight - highlightLeft;
+          final highlightHeight = highlightBottom - highlightTop;
           
           // Calculate tooltip position
           double tooltipTop;
-          
           if (_tourStep == 2) {
-            // For FAB, show tooltip above
-            tooltipTop = position.dy - 200;
-            // Ensure it doesn't go above screen
-            if (tooltipTop < 20) {
-              tooltipTop = 20;
-            }
+            // FAB - show above
+            tooltipTop = (position.dy - 220).clamp(20.0, screenHeight - 300.0);
           } else {
-            // For stories and welcome, show tooltip below
-            tooltipTop = position.dy + size.height + 20;
-            // Ensure it doesn't go below screen (considering tooltip height ~250)
+            // Stories/Welcome - show below, or above if not enough space
+            tooltipTop = position.dy + size.height + 30;
             if (tooltipTop + 250 > screenHeight) {
-              tooltipTop = position.dy - 250; // Show above instead
-              // If still doesn't fit, center it
-              if (tooltipTop < 20) {
-                tooltipTop = (screenHeight - 300) / 2;
-              }
+              tooltipTop = (position.dy - 250).clamp(20.0, screenHeight - 300.0);
             }
+            tooltipTop = tooltipTop.clamp(20.0, screenHeight - 300.0);
           }
-
-          // Calculate tooltip position with proper bounds
-          final maxTooltipTop = (screenHeight - 300.0).clamp(20.0, screenHeight - 20.0);
-          final clampedTooltipTop = tooltipTop.clamp(20.0, maxTooltipTop);
           
-          // Ensure highlight area is within screen bounds
-          final highlightLeft = position.dx.clamp(0.0, screenWidth);
-          final highlightTop = position.dy.clamp(0.0, screenHeight);
-          final highlightWidth = size.width.clamp(0.0, screenWidth - highlightLeft);
-          final highlightHeight = size.height.clamp(0.0, screenHeight - highlightTop);
-          
-          LoggerService.v('HomeScreen', 'Highlight - left: $highlightLeft, top: $highlightTop, width: $highlightWidth, height: $highlightHeight');
-          LoggerService.v('HomeScreen', 'Tooltip top: $clampedTooltipTop');
+          LoggerService.v('HomeScreen', 'Highlight: ($highlightLeft, $highlightTop) ${highlightWidth}x$highlightHeight');
+          LoggerService.v('HomeScreen', 'Tooltip top: $tooltipTop');
 
           return Material(
             type: MaterialType.transparency,
@@ -333,11 +320,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 // Highlight area - use calculated position and size
                 Positioned(
-                  left: highlightLeft - 8,
-                  top: highlightTop - 8,
+                  left: highlightLeft,
+                  top: highlightTop,
                   child: Container(
-                    width: highlightWidth + 16,
-                    height: highlightHeight + 16,
+                    width: highlightWidth,
+                    height: highlightHeight,
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: const Color(0xFF9C88FF),
@@ -358,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Positioned(
                   left: 20,
                   right: 20,
-                  top: clampedTooltipTop,
+                  top: tooltipTop,
                   child: Material(
                     color: Colors.transparent,
                     child: Container(

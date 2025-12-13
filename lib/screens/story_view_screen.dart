@@ -92,6 +92,26 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
     }
   }
 
+  void _handleActionTap() {
+    final story = widget.stories[_currentIndex];
+    if (story.onActionTap != null) {
+      // Pause story progress
+      setState(() {
+        _isPaused = true;
+      });
+      // Execute action
+      story.onActionTap!();
+      // Resume after a delay
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() {
+            _isPaused = false;
+          });
+        }
+      });
+    }
+  }
+
   Color _getLighterColor(Color color) {
     return Color.fromRGBO(
       (color.red + 80).clamp(0, 255),
@@ -127,255 +147,228 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
       builder: (context, child) {
         return Scaffold(
           backgroundColor: Colors.black,
-          body: GestureDetector(
-            onTapDown: (_) => setState(() => _isPaused = true),
-            onTapUp: (_) => setState(() => _isPaused = false),
-            onTapCancel: () => setState(() => _isPaused = false),
-            child: Stack(
-              children: [
-                // Background gradient
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        _getLighterColor(story.backgroundColor),
-                        story.backgroundColor,
-                        _getDarkerColor(story.backgroundColor),
-                      ],
-                    ),
+          body: Stack(
+            children: [
+              // Background gradient
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      _getLighterColor(story.backgroundColor),
+                      story.backgroundColor,
+                      _getDarkerColor(story.backgroundColor),
+                    ],
                   ),
                 ),
-                // Progress bars at top
-                SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                    child: Row(
-                      children: List.generate(widget.stories.length, (index) {
-                        return Expanded(
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 2.w),
-                            height: 3.h,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                            child: Stack(
-                              children: [
-                                if (index < _currentIndex)
-                                  Container(
+              ),
+              // Progress bars at top
+              SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                  child: Row(
+                    children: List.generate(widget.stories.length, (index) {
+                      return Expanded(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 2.w),
+                          height: 3.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: Stack(
+                            children: [
+                              if (index < _currentIndex)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                )
+                              else if (index == _currentIndex)
+                                FractionallySizedBox(
+                                  widthFactor: _progress,
+                                  child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(2),
                                     ),
-                                  )
-                                else if (index == _currentIndex)
-                                  FractionallySizedBox(
-                                    widthFactor: _progress,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(2),
-                                      ),
-                                    ),
                                   ),
-                              ],
-                            ),
+                                ),
+                            ],
                           ),
-                        );
-                      }),
-                    ),
+                        ),
+                      );
+                    }),
                   ),
                 ),
-                // Content - Center area (non-interactive for navigation)
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.w),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 120.w,
-                          height: 120.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            story.icon,
-                            size: 70.sp,
-                            color: story.backgroundColor,
-                          ),
+              ),
+              // Content area - NO gesture detection here
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 120.w,
+                        height: 120.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 40.h),
-                        Text(
-                          story.title,
-                          style: TextStyle(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black54,
-                                blurRadius: 10,
-                                offset: Offset(0, 5.h),
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Icon(
+                          story.icon,
+                          size: 70.sp,
+                          color: story.backgroundColor,
                         ),
-                        SizedBox(height: 20.h),
-                        Text(
-                          story.message,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            color: Colors.white.withOpacity(0.9),
-                            letterSpacing: 0.5,
-                            height: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 40.h),
+                      Text(
+                        story.title,
+                        style: TextStyle(
+                          fontSize: 32.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black54,
+                              blurRadius: 10,
+                              offset: Offset(0, 5.h),
+                            ),
+                          ],
                         ),
-                        if (story.onActionTap != null) ...[
-                          SizedBox(height: 50.h),
-                          // Large, prominent action button
-                          Container(
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20.h),
+                      Text(
+                        story.message,
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          color: Colors.white.withOpacity(0.9),
+                          letterSpacing: 0.5,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (story.onActionTap != null) ...[
+                        SizedBox(height: 50.h),
+                        // Action button - completely separate layer
+                        GestureDetector(
+                          onTap: _handleActionTap,
+                          child: Container(
                             margin: EdgeInsets.symmetric(horizontal: 20.w),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 32.w,
+                              vertical: 18.h,
+                            ),
                             decoration: BoxDecoration(
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(30.r),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                  offset: Offset(0, 8.h),
+                                  color: Colors.black.withOpacity(0.4),
+                                  blurRadius: 25,
+                                  spreadRadius: 8,
+                                  offset: Offset(0, 10.h),
                                 ),
                               ],
                             ),
-                            child: Material(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30.r),
-                              child: InkWell(
-                                onTap: () {
-                                  // Pause story progress
-                                  setState(() {
-                                    _isPaused = true;
-                                  });
-                                  // Execute action
-                                  story.onActionTap?.call();
-                                  // Resume after a short delay
-                                  Future.delayed(const Duration(milliseconds: 500), () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _isPaused = false;
-                                      });
-                                    }
-                                  });
-                                },
-                                borderRadius: BorderRadius.circular(30.r),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 32.w,
-                                    vertical: 18.h,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        story.actionIcon ?? Icons.telegram,
-                                        size: 28.sp,
-                                        color: story.backgroundColor,
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Text(
-                                        story.actionLabel ?? 'Join Telegram',
-                                        style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: story.backgroundColor,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ],
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  story.actionIcon ?? Icons.telegram,
+                                  size: 30.sp,
+                                  color: story.backgroundColor,
+                                ),
+                                SizedBox(width: 12.w),
+                                Text(
+                                  story.actionLabel ?? 'Join Telegram',
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: story.backgroundColor,
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ],
-                    ),
-                  ),
-                ),
-                // Navigation areas - only on sides, not on content
-                Positioned.fill(
-                  child: Row(
-                    children: [
-                      // Left side - Previous story (only left 30% of screen)
-                      Expanded(
-                        flex: 3,
-                        child: GestureDetector(
-                          onTap: _previousStory,
-                          behavior: HitTestBehavior.translucent,
-                          child: Container(
-                            color: Colors.transparent,
-                          ),
-                        ),
-                      ),
-                      // Center area - NO navigation (content area - 40% of screen)
-                      Expanded(
-                        flex: 4,
-                        child: IgnorePointer(
-                          ignoring: false,
-                          child: Container(
-                            color: Colors.transparent,
-                          ),
-                        ),
-                      ),
-                      // Right side - Next story (only right 30% of screen)
-                      Expanded(
-                        flex: 3,
-                        child: GestureDetector(
-                          onTap: _nextStory,
-                          behavior: HitTestBehavior.translucent,
-                          child: Container(
-                            color: Colors.transparent,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-                // Close button
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 28.sp,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+              ),
+              // Navigation - ONLY on left and right edges, NOT on center
+              Positioned.fill(
+                child: Row(
+                  children: [
+                    // Left 25% - Previous
+                    GestureDetector(
+                      onTap: _previousStory,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        color: Colors.transparent,
                       ),
+                    ),
+                    // Center 50% - NO navigation (content area)
+                    Expanded(
+                      child: Container(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                    // Right 25% - Next
+                    GestureDetector(
+                      onTap: _nextStory,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Pause/Resume gesture - tap anywhere to pause
+              Positioned.fill(
+                child: GestureDetector(
+                  onTapDown: (_) => setState(() => _isPaused = true),
+                  onTapUp: (_) => setState(() => _isPaused = false),
+                  onTapCancel: () => setState(() => _isPaused = false),
+                  behavior: HitTestBehavior.translucent,
+                ),
+              ),
+              // Close button
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 28.sp,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
