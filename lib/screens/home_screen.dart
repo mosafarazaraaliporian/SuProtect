@@ -309,16 +309,18 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           }
 
-          // Clamp positions to valid ranges
-          final maxLeft = (screenWidth - size.width - 16).clamp(0.0, screenWidth);
-          final maxTop = (screenHeight - size.height - 16).clamp(0.0, screenHeight);
-          final maxTooltipTop = (screenHeight - 300.0).clamp(20.0, screenHeight);
-          
-          final clampedLeft = (position.dx - 8).clamp(0.0, maxLeft);
-          final clampedTop = (position.dy - 8).clamp(0.0, maxTop);
+          // Calculate tooltip position with proper bounds
+          final maxTooltipTop = (screenHeight - 300.0).clamp(20.0, screenHeight - 20.0);
           final clampedTooltipTop = tooltipTop.clamp(20.0, maxTooltipTop);
           
-          LoggerService.v('HomeScreen', 'Clamped positions - left: $clampedLeft, top: $clampedTop, tooltipTop: $clampedTooltipTop');
+          // Ensure highlight area is within screen bounds
+          final highlightLeft = position.dx.clamp(0.0, screenWidth);
+          final highlightTop = position.dy.clamp(0.0, screenHeight);
+          final highlightWidth = size.width.clamp(0.0, screenWidth - highlightLeft);
+          final highlightHeight = size.height.clamp(0.0, screenHeight - highlightTop);
+          
+          LoggerService.v('HomeScreen', 'Highlight - left: $highlightLeft, top: $highlightTop, width: $highlightWidth, height: $highlightHeight');
+          LoggerService.v('HomeScreen', 'Tooltip top: $clampedTooltipTop');
 
           return Material(
             type: MaterialType.transparency,
@@ -329,24 +331,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   color: Colors.black.withOpacity(0.7),
                 ),
-                // Highlight area
+                // Highlight area - use calculated position and size
                 Positioned(
-                  left: clampedLeft,
-                  top: clampedTop,
+                  left: highlightLeft - 8,
+                  top: highlightTop - 8,
                   child: Container(
-                    width: (size.width + 16).clamp(0.0, screenWidth - clampedLeft),
-                    height: (size.height + 16).clamp(0.0, screenHeight - clampedTop),
+                    width: highlightWidth + 16,
+                    height: highlightHeight + 16,
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: const Color(0xFF9C88FF),
-                        width: 3,
+                        width: 4,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF9C88FF).withOpacity(0.3),
-                          blurRadius: 20,
-                          spreadRadius: 5,
+                          color: const Color(0xFF9C88FF).withOpacity(0.5),
+                          blurRadius: 25,
+                          spreadRadius: 8,
                         ),
                       ],
                     ),

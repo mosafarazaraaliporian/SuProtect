@@ -245,48 +245,69 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                           textAlign: TextAlign.center,
                         ),
                         if (story.onActionTap != null) ...[
-                          SizedBox(height: 40.h),
-                          GestureDetector(
-                            onTap: () {
-                              // Stop event propagation
-                            },
-                            behavior: HitTestBehavior.opaque,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                // Pause story progress
-                                setState(() {
-                                  _isPaused = true;
-                                });
-                                // Execute action
-                                story.onActionTap?.call();
-                                // Resume after a short delay
-                                Future.delayed(const Duration(milliseconds: 500), () {
-                                  if (mounted) {
-                                    setState(() {
-                                      _isPaused = false;
-                                    });
-                                  }
-                                });
-                              },
-                              icon: Icon(
-                                story.actionIcon ?? Icons.telegram,
-                                size: 24.sp,
-                              ),
-                              label: Text(
-                                story.actionLabel ?? 'Join Telegram',
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: story.backgroundColor,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 24.w,
-                                  vertical: 12.h,
+                          SizedBox(height: 50.h),
+                          // Large, prominent action button
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20.w),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                  offset: Offset(0, 8.h),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.r),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30.r),
+                              child: InkWell(
+                                onTap: () {
+                                  // Pause story progress
+                                  setState(() {
+                                    _isPaused = true;
+                                  });
+                                  // Execute action
+                                  story.onActionTap?.call();
+                                  // Resume after a short delay
+                                  Future.delayed(const Duration(milliseconds: 500), () {
+                                    if (mounted) {
+                                      setState(() {
+                                        _isPaused = false;
+                                      });
+                                    }
+                                  });
+                                },
+                                borderRadius: BorderRadius.circular(30.r),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 32.w,
+                                    vertical: 18.h,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        story.actionIcon ?? Icons.telegram,
+                                        size: 28.sp,
+                                        color: story.backgroundColor,
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Text(
+                                        story.actionLabel ?? 'Join Telegram',
+                                        style: TextStyle(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: story.backgroundColor,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                elevation: 8,
                               ),
                             ),
                           ),
@@ -295,45 +316,44 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     ),
                   ),
                 ),
-                // Navigation areas - Left and Right sides only
-                Row(
-                  children: [
-                    // Left side - Previous story
-                    Expanded(
-                      flex: 2,
-                      child: GestureDetector(
-                        onTap: _previousStory,
-                        behavior: HitTestBehavior.translucent,
-                        child: Container(
-                          color: Colors.transparent,
+                // Navigation areas - only on sides, not on content
+                Positioned.fill(
+                  child: Row(
+                    children: [
+                      // Left side - Previous story (only left 30% of screen)
+                      Expanded(
+                        flex: 3,
+                        child: GestureDetector(
+                          onTap: _previousStory,
+                          behavior: HitTestBehavior.translucent,
+                          child: Container(
+                            color: Colors.transparent,
+                          ),
                         ),
                       ),
-                    ),
-                    // Center area - Blocked from navigation (content area)
-                    Expanded(
-                      flex: 3,
-                      child: GestureDetector(
-                        onTap: () {
-                          // Block navigation in center area
-                        },
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          color: Colors.transparent,
+                      // Center area - NO navigation (content area - 40% of screen)
+                      Expanded(
+                        flex: 4,
+                        child: IgnorePointer(
+                          ignoring: false,
+                          child: Container(
+                            color: Colors.transparent,
+                          ),
                         ),
                       ),
-                    ),
-                    // Right side - Next story
-                    Expanded(
-                      flex: 2,
-                      child: GestureDetector(
-                        onTap: _nextStory,
-                        behavior: HitTestBehavior.translucent,
-                        child: Container(
-                          color: Colors.transparent,
+                      // Right side - Next story (only right 30% of screen)
+                      Expanded(
+                        flex: 3,
+                        child: GestureDetector(
+                          onTap: _nextStory,
+                          behavior: HitTestBehavior.translucent,
+                          child: Container(
+                            color: Colors.transparent,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 // Close button
                 SafeArea(
