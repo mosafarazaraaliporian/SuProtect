@@ -310,9 +310,15 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           // Clamp positions to valid ranges
-          final clampedLeft = (position.dx - 8).clamp(0.0, screenWidth - size.width - 16);
-          final clampedTop = (position.dy - 8).clamp(0.0, screenHeight - size.height - 16);
-          final clampedTooltipTop = tooltipTop.clamp(20.0, screenHeight - 300.0);
+          final maxLeft = (screenWidth - size.width - 16).clamp(0.0, screenWidth);
+          final maxTop = (screenHeight - size.height - 16).clamp(0.0, screenHeight);
+          final maxTooltipTop = (screenHeight - 300.0).clamp(20.0, screenHeight);
+          
+          final clampedLeft = (position.dx - 8).clamp(0.0, maxLeft);
+          final clampedTop = (position.dy - 8).clamp(0.0, maxTop);
+          final clampedTooltipTop = tooltipTop.clamp(20.0, maxTooltipTop);
+          
+          LoggerService.v('HomeScreen', 'Clamped positions - left: $clampedLeft, top: $clampedTop, tooltipTop: $clampedTooltipTop');
 
           return Material(
             type: MaterialType.transparency,
