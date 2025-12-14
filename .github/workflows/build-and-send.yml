@@ -1,0 +1,102 @@
+name: Build and Send to Telegram
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        cache: 'gradle'
+        
+    - name: Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          ${{ runner.tool_cache }}/flutter
+        key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-flutter-
+          
+    - name: Cache Gradle
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.38.0'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Build APK
+      run: flutter build apk --release --split-per-abi
+      
+    - name: Get APK info
+      id: apk_info
+      run: |
+        # Find all APK files
+        APK_FILES=$(find build/app/outputs/flutter-apk -name "*.apk" | sort)
+        APK_COUNT=$(echo "$APK_FILES" | wc -l)
+        
+        # Get the first APK for info (usually arm64-v8a)
+        FIRST_APK=$(echo "$APK_FILES" | head -n 1)
+        APK_SIZE=$(du -h "$FIRST_APK" | cut -f1)
+        APK_NAME=$(basename "$FIRST_APK")
+        
+        echo "apk_path=$FIRST_APK" >> $GITHUB_OUTPUT
+        echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+        echo "apk_size=$APK_SIZE" >> $GITHUB_OUTPUT
+        echo "apk_count=$APK_COUNT" >> $GITHUB_OUTPUT
+        
+        echo "Found $APK_COUNT APK files:"
+        echo "$APK_FILES" | while read apk; do
+          size=$(du -h "$apk" | cut -f1)
+          echo "  - $(basename "$apk"): $size"
+        done
+        
+    - name: Send APKs to Telegram
+      run: |
+        APK_FILES=$(find build/app/outputs/flutter-apk -name "*.apk" | sort)
+        echo "$APK_FILES" | while read apk; do
+          APK_NAME=$(basename "$apk")
+          APK_SIZE=$(du -h "$apk" | cut -f1)
+          
+          # Send each APK
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -F "document=@$apk" \
+            -F "caption=🚀 *SuProtect Build - $APK_NAME*
+          
+          📊 *Size:* $APK_SIZE
+          🔖 *Branch:* ${{ github.ref_name }}
+          📝 *Commit:* ${{ github.sha }}
+          👤 *Author:* ${{ github.actor }}
+          
+          ✅ Build completed successfully!" \
+            -F "parse_mode=Markdown"
+        done
+

@@ -1,0 +1,593 @@
+I/FA      ( 2156): App measurement initialized, version: 75066
+I/FA      ( 2156): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+I/FA      ( 2156): To enable faster debug mode event logging run:
+I/FA      ( 2156):   adb shell setprop debug.firebase.analytics.app com.google.android.apps.youtube.music
+I/FA-SVC  ( 1234): App measurement initialized, version: 225014
+I/FA      ( 2171): App measurement initialized, version: 75066
+I/FA      ( 2171): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+I/FA      ( 2171): To enable faster debug mode event logging run:
+I/FA      ( 2171):   adb shell setprop debug.firebase.analytics.app com.google.android.youtube
+I/FA-SVC  ( 3479): App measurement initialized, version: 225014
+E/FA      ( 2171): Failed to get app instance id: android.os.DeadObjectException: aj.b(:com.google.android.gms.dynamite_measurementdynamite@225014047@22.50.14 (190800-0):2)
+E/FA      ( 2171): Failed to send default event parameters to service: android.os.DeadObjectException: aj.c(:com.google.android.gms.dynamite_measurementdynamite@225014047@22.50.14 (190800-0):2)
+E/FA      ( 2171): Failed to send measurementEnabled to the service: android.os.DeadObjectException: aj.c(:com.google.android.gms.dynamite_measurementdynamite@225014047@22.50.14 (190800-0):2)
+I/FA-SVC  ( 4127): App measurement initialized, version: 225014
+I/FA      ( 4141): App measurement initialized, version: 75066
+I/FA      ( 4141): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+I/FA      ( 4141): To enable faster debug mode event logging run:
+I/FA      ( 4141):   adb shell setprop debug.firebase.analytics.app com.google.android.apps.youtube.music
+I/FA-SVC  ( 4127): Install Referrer Reporter is not available
+W/FA-SVC  ( 4127): Storing bundle outside of the max uploading time span. appId, now, timestamp: com.google.android.apps.youtube.music, 1765589193464, 1685965622346
+I/FA-SVC  ( 5869): App measurement initialized, version: 225014
+W/m.suprotect.app( 7362): Unexpected CPU variant for x86: x86_64.
+W/m.suprotect.app( 7362): Known variants: atom, sandybridge, silvermont, kabylake, default
+I/ndk_translation( 7362): Initialized NDK translation (aarch64), version 0.2.3
+D/CompatibilityChangeReporter( 7362): Compat change id reported: 171979766; UID 10170; state: ENABLED
+D/nativeloader( 7362): Configuring classloader-namespace for other apk /system_ext/framework/androidx.window.extensions.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/lib/arm64:/data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.suprotect.app
+D/nativeloader( 7362): Configuring classloader-namespace for other apk /system_ext/framework/androidx.window.sidecar.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/lib/arm64:/data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.suprotect.app
+D/nativeloader( 7362): Configuring classloader-namespace for other apk /data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/lib/arm64:/data/app/~~S7kFsTcK7geO9-1k2Zs9Wg==/com.suprotect.app-VG9-zH32iL0_L8rKODpP3w==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.suprotect.app
+V/GraphicsEnvironment( 7362): ANGLE Developer option for 'com.suprotect.app' set to: 'default'
+V/GraphicsEnvironment( 7362): ANGLE GameManagerService for com.suprotect.app: false
+V/GraphicsEnvironment( 7362): Neither updatable production driver nor prerelease driver is supported.
+D/NetworkSecurityConfig( 7362): No Network Security Config specified, using platform default
+D/NetworkSecurityConfig( 7362): No Network Security Config specified, using platform default
+D/CompatibilityChangeReporter( 7362): Compat change id reported: 183155436; UID 10170; state: ENABLED
+W/ziparchive( 7362): Unable to open '/data/user_de/0/com.google.android.gms/app_chimera/m/00000002/DynamiteLoader.dm': No such file or directory
+W/ziparchive( 7362): Unable to open '/data/user_de/0/com.google.android.gms/app_chimera/m/00000002/DynamiteLoader.dm': No such file or directory
+D/TrafficStats( 7362): tagSocket(73) with statsTag=0xffffffff, statsUid=-1
+D/TrafficStats( 7362): tagSocket(80) with statsTag=0x8001, statsUid=-1
+D/libEGL  ( 7362): loaded /vendor/lib64/egl/libEGL_emulation.so
+D/libEGL  ( 7362): loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+D/libEGL  ( 7362): loaded /vendor/lib64/egl/libGLESv2_emulation.so
+I/FA      ( 7362): App measurement initialized, version: 130000
+I/FA      ( 7362): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+I/FA      ( 7362): To enable faster debug mode event logging run:
+I/FA      ( 7362):   adb shell setprop debug.firebase.analytics.app com.suprotect.app
+I/FA      ( 7362): Tag Manager is not found and thus will not be used
+W/m.suprotect.app( 7362): type=1400 audit(0.0:322): avc: denied { getattr } for path="/proc/sys/vm/max_map_count" dev="proc" ino=66836 scontext=u:r:untrusted_app:s0:c170,c256,c512,c768 tcontext=u:object_r:proc_max_map_count:s0 tclass=file permissive=0 app=com.suprotect.app
+W/m.suprotect.app( 7362): type=1400 audit(0.0:323): avc: denied { read } for name="max_map_count" dev="proc" ino=66836 scontext=u:r:untrusted_app:s0:c170,c256,c512,c768 tcontext=u:object_r:proc_max_map_count:s0 tclass=file permissive=0 app=com.suprotect.app
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLOutputStream.writeInternal(ConscryptEngineSocket.java:666)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLOutputStream.write(ConscryptEngineSocket.java:661)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$1.write(Okio.java:78)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$1.write(AsyncTimeout.java:157)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSink.flush(RealBufferedSink.java:222)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream.finishRequest(Http1xStream.java:163)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readNetworkResponse(HttpEngine.java:748)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:622)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:475)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:411)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponseCode(HttpURLConnectionImpl.java:542)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getResponseCode(DelegatingHttpsURLConnection.java:106)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getResponseCode(HttpsURLConnectionImpl.java:30)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:107)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:115)
+D/StrictMode( 7362): 	at java.net.SocketOutputStream.write(SocketOutputStream.java:156)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLOutputStream.writeToSocket(ConscryptEngineSocket.java:724)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLOutputStream.writeInternal(ConscryptEngineSocket.java:698)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLOutputStream.write(ConscryptEngineSocket.java:661)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$1.write(Okio.java:78)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$1.write(AsyncTimeout.java:157)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSink.flush(RealBufferedSink.java:222)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream.finishRequest(Http1xStream.java:163)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readNetworkResponse(HttpEngine.java:748)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:622)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:475)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:411)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponseCode(HttpURLConnectionImpl.java:542)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getResponseCode(DelegatingHttpsURLConnection.java:106)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getResponseCode(HttpsURLConnectionImpl.java:30)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:107)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/HostConnection( 7362): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_YUV_Cache ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_sync_buffer_data ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:836)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:307)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:301)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readUtf8LineStrict(RealBufferedSource.java:197)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream.readResponse(Http1xStream.java:188)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream.readResponseHeaders(Http1xStream.java:129)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readNetworkResponse(HttpEngine.java:750)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:622)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:475)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:411)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponseCode(HttpURLConnectionImpl.java:542)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getResponseCode(DelegatingHttpsURLConnection.java:106)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getResponseCode(HttpsURLConnectionImpl.java:30)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:107)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at java.net.SocketInputStream.read(SocketInputStream.java:172)
+D/StrictMode( 7362): 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readFromSocket(ConscryptEngineSocket.java:945)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:909)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:307)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.indexOf(RealBufferedSource.java:301)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readUtf8LineStrict(RealBufferedSource.java:197)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream.readResponse(Http1xStream.java:188)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream.readResponseHeaders(Http1xStream.java:129)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readNetworkResponse(HttpEngine.java:750)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:622)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:475)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:411)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getResponseCode(HttpURLConnectionImpl.java:542)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getResponseCode(DelegatingHttpsURLConnection.java:106)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getResponseCode(HttpsURLConnectionImpl.java:30)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:107)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/EGL_emulation( 7362): eglCreateContext: 0x712a77174d10: maj 3 min 1 rcv 4
+D/EGL_emulation( 7362): eglCreateContext: 0x712a77175490: maj 3 min 1 rcv 4
+D/EGL_emulation( 7362): eglMakeCurrent: 0x712a77175490: ver 3 1 (tinfo 0x712c8bfdc080) (first time)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:836)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readHexadecimalUnsignedLong(RealBufferedSource.java:271)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.readChunkSize(Http1xStream.java:456)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.read(Http1xStream.java:437)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.read(RealBufferedSource.java:51)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.consumeHeader(GzipSource.java:116)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.read(GzipSource.java:75)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource$1.read(RealBufferedSource.java:372)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:291)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:355)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:181)
+D/StrictMode( 7362): 	at java.io.InputStreamReader.read(InputStreamReader.java:180)
+D/StrictMode( 7362): 	at java.io.BufferedReader.fill(BufferedReader.java:172)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:337)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:403)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:134)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:836)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readHexadecimalUnsignedLong(RealBufferedSource.java:271)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.readChunkSize(Http1xStream.java:456)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.read(Http1xStream.java:437)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.read(RealBufferedSource.java:51)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.exhausted(RealBufferedSource.java:61)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.InflaterSource.refill(InflaterSource.java:103)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.InflaterSource.read(InflaterSource.java:64)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.read(GzipSource.java:82)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource$1.read(RealBufferedSource.java:372)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:291)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:355)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:181)
+D/StrictMode( 7362): 	at java.io.InputStreamReader.read(InputStreamReader.java:180)
+D/StrictMode( 7362): 	at java.io.BufferedReader.fill(BufferedReader.java:172)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:337)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:403)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:134)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:836)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readHexadecimalUnsignedLong(RealBufferedSource.java:271)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.readChunkSize(Http1xStream.java:456)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.read(Http1xStream.java:437)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.read(RealBufferedSource.java:51)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readIntLe(RealBufferedSource.java:238)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.consumeTrailer(GzipSource.java:175)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.read(GzipSource.java:94)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource$1.read(RealBufferedSource.java:372)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:291)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:355)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:181)
+D/StrictMode( 7362): 	at java.io.InputStreamReader.read(InputStreamReader.java:180)
+D/StrictMode( 7362): 	at java.io.BufferedReader.fill(BufferedReader.java:172)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:337)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:403)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:134)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:836)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readHexadecimalUnsignedLong(RealBufferedSource.java:271)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.readChunkSize(Http1xStream.java:456)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.read(Http1xStream.java:437)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.read(RealBufferedSource.java:51)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readIntLe(RealBufferedSource.java:238)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.consumeTrailer(GzipSource.java:176)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.read(GzipSource.java:94)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource$1.read(RealBufferedSource.java:372)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:291)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:355)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:181)
+D/StrictMode( 7362): 	at java.io.InputStreamReader.read(InputStreamReader.java:180)
+D/StrictMode( 7362): 	at java.io.BufferedReader.fill(BufferedReader.java:172)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:337)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:403)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:134)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+D/StrictMode( 7362): StrictMode policy violation: android.os.strictmode.NetworkViolation
+D/StrictMode( 7362): 	at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(StrictMode.java:1672)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.Platform.blockGuardOnNetwork(Platform.java:431)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:836)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readUntilDataAvailable(ConscryptEngineSocket.java:824)
+D/StrictMode( 7362): 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.read(ConscryptEngineSocket.java:797)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.Okio$2.read(Okio.java:138)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.AsyncTimeout$2.read(AsyncTimeout.java:213)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.request(RealBufferedSource.java:72)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.require(RealBufferedSource.java:65)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.readHexadecimalUnsignedLong(RealBufferedSource.java:271)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.readChunkSize(Http1xStream.java:456)
+D/StrictMode( 7362): 	at com.android.okhttp.internal.http.Http1xStream$ChunkedSource.read(Http1xStream.java:437)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.read(RealBufferedSource.java:51)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource.exhausted(RealBufferedSource.java:61)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.GzipSource.read(GzipSource.java:101)
+D/StrictMode( 7362): 	at com.android.okhttp.okio.RealBufferedSource$1.read(RealBufferedSource.java:372)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:291)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:355)
+D/StrictMode( 7362): 	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:181)
+D/StrictMode( 7362): 	at java.io.InputStreamReader.read(InputStreamReader.java:180)
+D/StrictMode( 7362): 	at java.io.BufferedReader.fill(BufferedReader.java:172)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:337)
+D/StrictMode( 7362): 	at java.io.BufferedReader.readLine(BufferedReader.java:403)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invokeSuspend(SourceFile:134)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher$doConfigFetch$2.invoke(SourceFile:2)
+D/StrictMode( 7362): 	at com.google.android.gms.internal.measurement.H1.c(SourceFile:5)
+D/StrictMode( 7362): 	at Y1.v.q(SourceFile:95)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettingsFetcher.doConfigFetch(SourceFile:14)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings.updateSettings(SourceFile:331)
+D/StrictMode( 7362): 	at com.google.firebase.sessions.settings.RemoteSettings$updateSettings$1.invokeSuspend(Unknown Source:11)
+D/StrictMode( 7362): 	at I1.a.resumeWith(SourceFile:9)
+D/StrictMode( 7362): 	at Y1.B.run(SourceFile:115)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+D/StrictMode( 7362): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0(SourceFile:13)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.CustomThreadFactory.a(SourceFile:1)
+D/StrictMode( 7362): 	at com.google.firebase.concurrent.a.run(SourceFile:1)
+D/StrictMode( 7362): 	at java.lang.Thread.run(Thread.java:1012)
+I/flutter ( 7362): [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+W/1.raster( 7362): type=1400 audit(0.0:324): avc: denied { getattr } for path="/dev/pmsg0" dev="tmpfs" ino=454 scontext=u:r:untrusted_app:s0:c170,c256,c512,c768 tcontext=u:object_r:pmsg_device:s0 tclass=chr_file permissive=0 app=com.suprotect.app
+D/HostConnection( 7362): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_YUV_Cache ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_sync_buffer_data ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+D/EGL_emulation( 7362): eglMakeCurrent: 0x712a77175490: ver 3 1 (tinfo 0x712c8bfdc100) (first time)
+I/flutter ( 7362): [App] ℹ️ Starting SuProtect app...
+I/flutter ( 7362): [App] Initializing Firebase...
+I/Choreographer( 7362): Skipped 82 frames!  The application may be doing too much work on its main thread.
+D/HostConnection( 7362): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_YUV_Cache ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_sync_buffer_data ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+W/OpenGLRenderer( 7362): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+W/OpenGLRenderer( 7362): Failed to initialize 101010-2 format, error = EGL_SUCCESS
+D/EGL_emulation( 7362): eglCreateContext: 0x712a77177590: maj 3 min 1 rcv 4
+D/EGL_emulation( 7362): eglMakeCurrent: 0x712a77177590: ver 3 1 (tinfo 0x712c8bfdc180) (first time)
+I/Gralloc4( 7362): mapper 4.x is not supported
+W/Gralloc4( 7362): allocator 4.x is not supported
+D/HostConnection( 7362): HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_YUV_Cache ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_sync_buffer_data ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+I/Choreographer( 7362): Skipped 38 frames!  The application may be doing too much work on its main thread.
+I/flutter ( 7362): [App] ℹ️ Firebase initialized
+I/flutter ( 7362): [App] Initializing Firebase Services...
+I/FA-SVC  ( 7019): App measurement initialized, version: 225014
+D/CompatibilityChangeReporter( 7362): Compat change id reported: 194532703; UID 10170; state: ENABLED
+E/FirebaseMessaging( 7362): Topic sync or token retrieval failed on hard failure exceptions: java.util.concurrent.ExecutionException: java.io.IOException: TOO_MANY_REGISTRATIONS. Won't retry the operation.
+I/FA-SVC  ( 7019): Install Referrer Reporter is not available
+I/FA      ( 7629): App measurement initialized, version: 75066
+I/FA      ( 7629): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+I/FA      ( 7629): To enable faster debug mode event logging run:
+I/FA      ( 7629):   adb shell setprop debug.firebase.analytics.app com.google.android.apps.youtube.music
+D/CompatibilityChangeReporter( 7362): Compat change id reported: 78294732; UID 10170; state: ENABLED
+I/flutter ( 7362): User granted permission
+I/flutter ( 7362): Error initializing Firebase Service: [firebase_messaging/unknown] java.io.IOException: java.util.concurrent.ExecutionException: java.io.IOException: TOO_MANY_REGISTRATIONS
+I/flutter ( 7362): [App] ℹ️ Firebase Services initialized
+I/flutter ( 7362): [App] Initializing Notification Service...
+I/flutter ( 7362): [App] ℹ️ Notification Service initialized
+I/flutter ( 7362): [App] ℹ️ App initialization complete, running app...
+I/flutter ( 7362): [MyApp] → build()
+I/flutter ( 7362): [MyApp] Creating ThemeProvider
+I/flutter ( 7362): [SplashScreen] → initState()
+I/flutter ( 7362): [SplashScreen] S drawing animation started
+I/flutter ( 7362): [SplashScreen] → _navigateToNext()
+W/Parcel  ( 7362): Expecting binder but got null!
+D/EGL_emulation( 7362): app_time_stats: avg=11.07ms min=2.83ms max=128.11ms count=52
+I/flutter ( 7362): [SplashScreen] Text animation started
+D/EGL_emulation( 7362): app_time_stats: avg=7.29ms min=2.59ms max=46.44ms count=59
+D/EGL_emulation( 7362): app_time_stats: avg=4.06ms min=2.84ms max=8.18ms count=61
+I/flutter ( 7362): [SplashScreen] Checking auth status
+I/flutter ( 7362): [MyApp] Creating AuthProvider
+I/flutter ( 7362): [SplashScreen] → Navigate to: LoginScreen
+I/flutter ( 7362): [LoginScreen] → initState()
+I/FA      ( 8034): App measurement initialized, version: 75066
+I/FA      ( 8034): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+I/FA      ( 8034): To enable faster debug mode event logging run:
+I/FA      ( 8034):   adb shell setprop debug.firebase.analytics.app com.google.android.youtube
+I/FA-SVC  ( 7019): Install Referrer Reporter is not available
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 7362): app_time_stats: avg=1706.91ms min=64.81ms max=3349.01ms count=2
+I/flutter ( 7362): [SplashScreen] → dispose()
+D/EGL_emulation( 7362): app_time_stats: avg=24.06ms min=3.45ms max=285.38ms count=32
+D/InputMethodManager( 7362): showSoftInput() view=io.flutter.embedding.android.FlutterView{cc3b952 VFE...... .F....ID 0,0-1080,2274 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/EGL_emulation( 7362): app_time_stats: avg=1616.95ms min=1616.95ms max=1616.95ms count=1
+D/EGL_emulation( 7362): app_time_stats: avg=66.51ms min=3.22ms max=878.36ms count=14
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/InsetsController( 7362): show(ime(), fromIme=true)
+D/EGL_emulation( 7362): app_time_stats: avg=90.48ms min=6.29ms max=828.54ms count=11
+D/EGL_emulation( 7362): app_time_stats: avg=83.12ms min=6.89ms max=364.17ms count=12
+D/EGL_emulation( 7362): app_time_stats: avg=144.55ms min=4.47ms max=475.42ms count=7
+W/FA-SVC  ( 7019): Storing bundle outside of the max uploading time span. appId, now, timestamp: com.google.android.youtube, 1765621153125, 1685965631014
+D/EGL_emulation( 7362): app_time_stats: avg=450.88ms min=384.58ms max=503.15ms count=3
+D/EGL_emulation( 7362): app_time_stats: avg=222.88ms min=32.06ms max=379.05ms count=5
+W/RemoteInputConnectionImpl( 7362): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getTextBeforeCursor on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getTextBeforeCursor on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getTextBeforeCursor on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getSurroundingText on inactive InputConnection
+D/InsetsController( 7362): show(ime(), fromIme=true)
+D/InsetsController( 7362): show(ime(), fromIme=true)
+D/EGL_emulation( 7362): app_time_stats: avg=185.33ms min=13.83ms max=500.04ms count=8
+W/RemoteInputConnectionImpl( 7362): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getTextBeforeCursor on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getTextBeforeCursor on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): clearMetaKeyStates on inactive InputConnection
+W/RemoteInputConnectionImpl( 7362): getTextBeforeCursor on inactive InputConnection
+D/EGL_emulation( 7362): app_time_stats: avg=506.33ms min=501.99ms max=510.68ms count=2
+D/InsetsController( 7362): show(ime(), fromIme=true)
+D/EGL_emulation( 7362): app_time_stats: avg=373.53ms min=184.68ms max=490.38ms count=3
+D/EGL_emulation( 7362): app_time_stats: avg=353.93ms min=109.45ms max=506.77ms count=4
+D/EGL_emulation( 7362): app_time_stats: avg=500.25ms min=499.93ms max=500.56ms count=2
+D/InputMethodManager( 7362): showSoftInput() view=io.flutter.embedding.android.FlutterView{cc3b952 VFE...... .F...... 0,0-1080,2274 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InsetsController( 7362): show(ime(), fromIme=true)
+D/InsetsController( 7362): show(ime(), fromIme=true)
+D/EGL_emulation( 7362): app_time_stats: avg=110.93ms min=12.41ms max=499.60ms count=12
+D/EGL_emulation( 7362): app_time_stats: avg=164.74ms min=15.63ms max=490.82ms count=9
+D/EGL_emulation( 7362): app_time_stats: avg=503.58ms min=499.83ms max=507.32ms count=2
+D/EGL_emulation( 7362): app_time_stats: avg=2405.09ms min=8.20ms max=14309.04ms count=6
+D/EGL_emulation( 7362): app_time_stats: avg=359.65ms min=86.41ms max=499.38ms count=3
+D/EGL_emulation( 7362): app_time_stats: avg=78.29ms min=8.67ms max=879.83ms count=15
+I/flutter ( 7362): 👤 User Action: login_attempt
+I/flutter ( 7362): [LoginScreen] Attempting login for: jjj@hh.m
+I/flutter ( 7362): [LoginScreen] ℹ️ Login successful
+I/flutter ( 7362): [LoginScreen] → Navigate to: MainNavigation
+I/flutter ( 7362): [HomeScreen] → initState() with params: {uploadFileName: null}
+I/flutter ( 7362): [HomeScreen] → _checkWelcomeStory()
+I/flutter ( 7362): [HomeScreen] → _checkTour()
+I/flutter ( 7362): 👤 User Action: screen_view | Data: {screen: home}
+I/flutter ( 7362): [HomeScreen] Has seen welcome story: false
+I/flutter ( 7362): [HomeScreen] Has seen tour: false
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 7362): app_time_stats: avg=70.22ms min=12.30ms max=1098.74ms count=20
+I/flutter ( 7362): 👤 User Action: show_welcome_story
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 7362): app_time_stats: avg=22.48ms min=2.48ms max=147.18ms count=33
+D/EGL_emulation( 7362): app_time_stats: avg=29.95ms min=2.11ms max=51.94ms count=28
+D/EGL_emulation( 7362): app_time_stats: avg=48.33ms min=31.55ms max=51.42ms count=21
+D/EGL_emulation( 7362): app_time_stats: avg=50.00ms min=38.48ms max=61.20ms count=21
+D/EGL_emulation( 7362): app_time_stats: avg=48.42ms min=26.64ms max=54.60ms count=21
+D/TrafficStats( 7362): tagSocket(152) with statsTag=0xffffffff, statsUid=-1
+D/EGL_emulation( 7362): app_time_stats: avg=52.49ms min=48.52ms max=97.61ms count=20
+D/EGL_emulation( 7362): app_time_stats: avg=49.97ms min=48.71ms max=51.41ms count=21
+D/EGL_emulation( 7362): app_time_stats: avg=58.92ms min=30.34ms max=165.28ms count=17
+D/EGL_emulation( 7362): app_time_stats: avg=49.92ms min=14.10ms max=115.79ms count=21
+D/EGL_emulation( 7362): app_time_stats: avg=29.04ms min=2.63ms max=53.97ms count=30
+I/flutter ( 7362): [HomeScreen] → _showTour()
+I/flutter ( 7362): 👤 User Action: show_tour
+I/flutter ( 7362): [HomeScreen] Tour step reset to 0
+I/flutter ( 7362): [HomeScreen] Starting tour step after delay
+I/flutter ( 7362): [HomeScreen] → _showTourStep() with params: {tourStep: 0, mounted: true}
+I/flutter ( 7362): [HomeScreen] 🔍 No tour dialog to close
+I/flutter ( 7362): [HomeScreen] Tour step 0: Stories section
+I/flutter ( 7362): [HomeScreen] Target key: 816268102, Context: true
+I/flutter ( 7362): [HomeScreen] Getting render box for target key
+I/flutter ( 7362): [HomeScreen] Render box position: Instance of 'Offset', size: Instance of 'Size'
+I/flutter ( 7362): [HomeScreen] ℹ️ Showing tour dialog for step 0
+I/flutter ( 7362): [HomeScreen] Dialog context set
+I/flutter ( 7362): [HomeScreen] 🔍 Screen size: 411.42857142857144x866.2857142857143
+I/flutter ( 7362): [HomeScreen] 🔍 Highlight - left: 0.0, top: 104.76190476190476, width: 411.42857142857144, height: 96.01688951442647
+I/flutter ( 7362): [HomeScreen] 🔍 Tooltip top: 220.7787942763312
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 7362): app_time_stats: avg=145.17ms min=2.59ms max=2987.51ms count=25
+I/flutter ( 7362): 👤 User Action: tour_next | Data: {currentStep: 0, isFinish: false}
+I/flutter ( 7362): [HomeScreen] Closing tour dialog
+I/flutter ( 7362): [HomeScreen] Tour step incremented to: 1
+I/flutter ( 7362): [HomeScreen] Showing next tour step
+I/flutter ( 7362): [HomeScreen] → _showTourStep() with params: {tourStep: 1, mounted: true}
+I/flutter ( 7362): [HomeScreen] 🔍 No tour dialog to close
+I/flutter ( 7362): [HomeScreen] Tour step 1: Welcome section
+I/flutter ( 7362): [HomeScreen] Target key: 940527100, Context: true
+I/flutter ( 7362): [HomeScreen] Getting render box for target key
+I/flutter ( 7362): [HomeScreen] Render box position: Instance of 'Offset', size: Instance of 'Size'
+I/flutter ( 7362): [HomeScreen] ℹ️ Showing tour dialog for step 1
+I/flutter ( 7362): [HomeScreen] Dialog context set
+I/flutter ( 7362): [HomeScreen] 🔍 Screen size: 411.42857142857144x866.2857142857143
+I/flutter ( 7362): [HomeScreen] 🔍 Highlight - left: 0.0, top: 200.7787942763312, width: 411.42857142857144, height: 590.8271170537181
+I/flutter ( 7362): [HomeScreen] 🔍 Tooltip top: 283.14285714285717
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 7362): app_time_stats: avg=95.12ms min=3.03ms max=1905.21ms count=25
+I/flutter ( 7362): 👤 User Action: tour_next | Data: {currentStep: 1, isFinish: false}
+I/flutter ( 7362): [HomeScreen] Closing tour dialog
+I/flutter ( 7362): [HomeScreen] Tour step incremented to: 2
+I/flutter ( 7362): [HomeScreen] Showing next tour step
+I/flutter ( 7362): [HomeScreen] → _showTourStep() with params: {tourStep: 2, mounted: true}
+I/flutter ( 7362): [HomeScreen] 🔍 No tour dialog to close
+I/flutter ( 7362): [HomeScreen] Tour step 2: Upload button (FAB)
+I/flutter ( 7362): [HomeScreen] Target key: 770826805, Context: true
+I/flutter ( 7362): [HomeScreen] Getting render box for target key
+I/flutter ( 7362): [HomeScreen] Render box position: Instance of 'Offset', size: Instance of 'Size'
+I/flutter ( 7362): [HomeScreen] ℹ️ Showing tour dialog for step 2
+I/flutter ( 7362): [HomeScreen] Dialog context set
+I/flutter ( 7362): [HomeScreen] 🔍 Screen size: 411.42857142857144x866.2857142857143
+I/flutter ( 7362): [HomeScreen] 🔍 Highlight - left: 339.42857142857144, top: 719.6059113300494, width: 56.0, height: 56.0
+I/flutter ( 7362): [HomeScreen] 🔍 Tooltip top: 519.6059113300494
+W/OnBackInvokedCallback( 7362): OnBackInvokedCallback is not enabled for the application.
+W/OnBackInvokedCallback( 7362): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 7362): app_time_stats: avg=224.76ms min=2.86ms max=5621.18ms count=27
+I/flutter ( 7362): 👤 User Action: tour_next | Data: {currentStep: 2, isFinish: true}
+I/flutter ( 7362): [HomeScreen] Closing tour dialog
+I/flutter ( 7362): [HomeScreen] Tour step incremented to: 3
+I/flutter ( 7362): [HomeScreen] ℹ️ Tour finished, saving state
+I/flutter ( 7362): [HomeScreen] ℹ️ Tour marked as seen
+D/EGL_emulation( 7362): app_time_stats: avg=112.90ms min=13.27ms max=1648.54ms count=18
+D/EGL_emulation( 7362): app_time_stats: avg=30.19ms min=1.99ms max=953.35ms count=39
+D/EGL_emulation( 7362): app_time_stats: avg=27.80ms min=11.66ms max=450.44ms count=39
+D/EGL_emulation( 7362): app_time_stats: avg=17.44ms min=2.45ms max=436.45ms count=38
+D/EGL_emulation( 7362): app_time_stats: avg=32.89ms min=11.02ms max=649.59ms count=39
+D/EGL_emulation( 7362): app_time_stats: avg=41.47ms min=9.43ms max=984.24ms count=39

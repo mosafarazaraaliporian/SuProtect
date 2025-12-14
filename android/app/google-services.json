@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "353745539342",
+    "project_id": "suprotect-687cd",
+    "storage_bucket": "suprotect-687cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353745539342:android:df426503fb32d3667ac75f",
+        "android_client_info": {
+          "package_name": "com.suprotect.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAExs9VYcsIdbVcfJP5gTnCXZ9apd9Y6vM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
