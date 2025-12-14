@@ -679,25 +679,9 @@ class _HomeScreenState extends State<HomeScreen> {
       'APK processed successfully',
     );
 
-    // Show success message with download button
-    if (downloadUrl != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Processing completed!', style: TextStyle(fontSize: 12.sp)),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
-          action: SnackBarAction(
-            label: 'Download',
-            textColor: Colors.white,
-            onPressed: () async {
-              final uri = Uri.parse(downloadUrl);
-              if (await canLaunchUrl(uri)) {
-                await launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
-            },
-          ),
-        ),
-      );
+    // Show download dialog
+    if (downloadUrl != null && mounted) {
+      _showDownloadDialog(downloadUrl);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -720,6 +704,94 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+  }
+
+  void _showDownloadDialog(String downloadUrl) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green, size: 28.sp),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  'APK Ready!',
+                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your file has been processed successfully and is ready for download.',
+                style: TextStyle(fontSize: 14.sp),
+              ),
+              SizedBox(height: 16.h),
+              Container(
+                padding: EdgeInsets.all(12.w),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.link, size: 20.sp, color: Colors.grey[700]),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        downloadUrl,
+                        style: TextStyle(fontSize: 11.sp, color: Colors.grey[700]),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close', style: TextStyle(fontSize: 14.sp)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final uri = Uri.parse(downloadUrl);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF9C88FF),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.download, size: 20.sp),
+                  SizedBox(width: 8.w),
+                  Text('Download', style: TextStyle(fontSize: 14.sp)),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _handleProcessingError(String error) {

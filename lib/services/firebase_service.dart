@@ -99,12 +99,34 @@ class FirebaseService {
     if (message.notification != null) {
       debugPrint('Message also contained a notification: ${message.notification}');
     }
+    
+    // Handle APK ready notification
+    if (message.data['type'] == 'apk_ready') {
+      final jobId = message.data['job_id'];
+      final downloadUrl = message.data['download_url'];
+      final filename = message.data['filename'];
+      
+      debugPrint('APK ready notification: jobId=$jobId, downloadUrl=$downloadUrl');
+      
+      // This will be handled by the app's notification handler
+      // which will show a dialog
+    }
   }
 
   void _handleMessageOpenedApp(RemoteMessage message) {
     debugPrint('A new onMessageOpenedApp event was published!');
     debugPrint('Message data: ${message.data}');
     debugPrint('Message notification: ${message.notification}');
+    
+    // Handle APK ready notification when app is opened from notification
+    if (message.data['type'] == 'apk_ready') {
+      final jobId = message.data['job_id'];
+      final downloadUrl = message.data['download_url'];
+      final filename = message.data['filename'];
+      
+      debugPrint('APK ready - opened from notification: jobId=$jobId');
+      // This will be handled by the app's navigation/routing
+    }
   }
 
   Future<void> logEvent(String name, Map<String, Object>? parameters) async {
