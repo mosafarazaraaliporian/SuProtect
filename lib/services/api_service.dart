@@ -22,9 +22,9 @@ class ApiService {
     if (_dio == null) {
       _dio = Dio(BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
-        sendTimeout: const Duration(minutes: 5),
+        connectTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(minutes: 15),
+        sendTimeout: const Duration(minutes: 15),
         headers: {
           'Content-Type': 'application/json',
           if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
@@ -77,6 +77,8 @@ class ApiService {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          sendTimeout: const Duration(minutes: 15),
+          receiveTimeout: const Duration(minutes: 15),
         ),
         onSendProgress: (sent, total) {
           if (onProgress != null && total > 0) {
