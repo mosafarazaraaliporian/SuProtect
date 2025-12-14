@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'logger_service.dart';
@@ -12,6 +12,23 @@ class ApiService {
   static const String statusEndpoint = '/api/v1/status';
   static const String downloadEndpoint = '/api/v1/download';
 
+  static Dio? _dio;
+
+  static Dio get dio {
+    if (_dio == null) {
+      _dio = Dio(BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(minutes: 5), // برای فایل‌های بزرگ
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      ));
+    }
+    return _dio!;
+  }
+
   /// Upload APK file to server
   /// Returns job_id for tracking
   static Future<Map<String, dynamic>> uploadApk({
@@ -22,46 +39,47 @@ class ApiService {
     try {
       LoggerService.logApi('POST', '$baseUrl$uploadEndpoint');
       
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('$baseUrl$uploadEndpoint'),
-      );
-
-      // Add file
-      var fileStream = apkFile.openRead();
-      var fileLength = await apkFile.length();
-      
-      var multipartFile = http.MultipartFile(
-        'file',
-        fileStream,
-        fileLength,
-        filename: apkFile.path.split('/').last,
-      );
-      
-      request.files.add(multipartFile);
-      
-      // Add user_id if provided
-      if (userId != null) {
-        request.fields['user_id'] = userId;
+      String fileName = apkFile.path.split('/').last;
+      if (fileName.contains('\\')) {
+        fileName = apkFile.path.split('\\').last;
       }
+      
+      FormData formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          apkFile.path,
+          filename: fileName,
+        ),
+        if (userId != null) 'user_id': userId,
+      });
 
-      // Send request with progress tracking
-      var streamedResponse = await request.send();
-      
-      // Track upload progress
-      int totalBytes = fileLength;
-      int receivedBytes = 0;
-      
-      var response = await http.Response.fromStream(streamedResponse);
+      var response = await dio.post(
+        uploadEndpoint,
+        data: formData,
+        onSendProgress: (sent, total) {
+          if (onProgress != null && total > 0) {
+            onProgress(sent / total);
+          }
+        },
+      );
       
       if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
+        var jsonResponse = response.data;
         LoggerService.i('ApiService', 'Upload successful: ${jsonResponse['job_id']}');
-        return jsonResponse;
+        return jsonResponse is Map ? jsonResponse : json.decode(jsonResponse.toString());
       } else {
-        var errorBody = json.decode(response.body);
-        LoggerService.e('ApiService', 'Upload failed: ${errorBody['detail']}');
-        throw Exception(errorBody['detail'] ?? 'Upload failed');
+        LoggerService.e('ApiService', 'Upload failed: ${response.statusCode}');
+        throw Exception('Upload failed with status ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      LoggerService.e('ApiService', 'Upload error', e);
+      if (e.response != null) {
+        var errorBody = e.response!.data;
+        String errorMsg = errorBody is Map 
+            ? (errorBody['detail'] ?? errorBody['message'] ?? 'Upload failed')
+            : errorBody.toString();
+        throw Exception(errorMsg);
+      } else {
+        throw Exception(e.message ?? 'Network error during upload');
       }
     } catch (e) {
       LoggerService.e('ApiService', 'Upload error', e);
@@ -74,20 +92,22 @@ class ApiService {
     try {
       LoggerService.logApi('GET', '$baseUrl$statusEndpoint/$jobId');
       
-      final response = await http.get(
-        Uri.parse('$baseUrl$statusEndpoint/$jobId'),
-        headers: {'Content-Type': 'application/json'},
-      );
+      var response = await dio.get('$statusEndpoint/$jobId');
 
       if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
-        return jsonResponse;
+        var jsonResponse = response.data;
+        return jsonResponse is Map ? jsonResponse : json.decode(jsonResponse.toString());
       } else if (response.statusCode == 404) {
         throw Exception('Job not found');
       } else {
-        var errorBody = json.decode(response.body);
-        throw Exception(errorBody['detail'] ?? 'Failed to get status');
+        throw Exception('Failed to get status');
       }
+    } on DioException catch (e) {
+      LoggerService.e('ApiService', 'Get status error', e);
+      if (e.response?.statusCode == 404) {
+        throw Exception('Job not found');
+      }
+      throw Exception(e.message ?? 'Failed to get status');
     } catch (e) {
       LoggerService.e('ApiService', 'Get status error', e);
       rethrow;
@@ -99,23 +119,31 @@ class ApiService {
     try {
       LoggerService.logApi('GET', '$baseUrl$downloadEndpoint/$jobId');
       
-      final response = await http.get(
-        Uri.parse('$baseUrl$downloadEndpoint/$jobId'),
-        headers: {'Content-Type': 'application/json'},
+      var response = await dio.get(
+        '$downloadEndpoint/$jobId',
+        options: Options(
+          followRedirects: false,
+          validateStatus: (status) => status! < 400,
+        ),
       );
 
       if (response.statusCode == 200 || response.statusCode == 302) {
         // If redirect, get the location header
-        if (response.headers.containsKey('location')) {
-          return response.headers['location']!;
+        if (response.headers.value('location') != null) {
+          return response.headers.value('location')!;
         }
         // Otherwise, parse JSON response
-        var jsonResponse = json.decode(response.body);
-        return jsonResponse['download_url'] ?? '';
+        var jsonResponse = response.data;
+        if (jsonResponse is Map) {
+          return jsonResponse['download_url'] ?? '';
+        }
+        return '';
       } else {
-        var errorBody = json.decode(response.body);
-        throw Exception(errorBody['detail'] ?? 'Failed to get download URL');
+        throw Exception('Failed to get download URL');
       }
+    } on DioException catch (e) {
+      LoggerService.e('ApiService', 'Get download URL error', e);
+      throw Exception(e.message ?? 'Failed to get download URL');
     } catch (e) {
       LoggerService.e('ApiService', 'Get download URL error', e);
       rethrow;
@@ -125,10 +153,7 @@ class ApiService {
   /// Check server health
   static Future<bool> checkHealth() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/health'),
-        headers: {'Content-Type': 'application/json'},
-      );
+      var response = await dio.get('/health');
       return response.statusCode == 200;
     } catch (e) {
       LoggerService.e('ApiService', 'Health check error', e);
@@ -136,4 +161,3 @@ class ApiService {
     }
   }
 }
-
