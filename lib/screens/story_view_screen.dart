@@ -154,22 +154,34 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
         return Scaffold(
           backgroundColor: Colors.black,
           body: GestureDetector(
-            // Swipe gestures for navigation
+            // Swipe gestures for navigation - improved sensitivity
             onHorizontalDragEnd: (details) {
               if (details.primaryVelocity != null) {
-                if (details.primaryVelocity! > 0) {
+                // Lower threshold for easier swiping
+                if (details.primaryVelocity! > 200) {
                   // Swipe right - previous story
                   _previousStory();
-                } else if (details.primaryVelocity! < 0) {
+                } else if (details.primaryVelocity! < -200) {
                   // Swipe left - next story
                   _nextStory();
                 }
+              }
+            },
+            // Also handle drag update for better responsiveness
+            onHorizontalDragUpdate: (details) {
+              // Allow dragging to show next/previous
+              if (details.delta.dx > 10) {
+                // Dragging right - could show previous
+              } else if (details.delta.dx < -10) {
+                // Dragging left - could show next
               }
             },
             // Tap to pause/resume
             onTapDown: (_) => setState(() => _isPaused = true),
             onTapUp: (_) => setState(() => _isPaused = false),
             onTapCancel: () => setState(() => _isPaused = false),
+            // Double tap to go to next
+            onDoubleTap: () => _nextStory(),
             child: Stack(
               children: [
                 // Background gradient

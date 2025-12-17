@@ -240,44 +240,23 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
     }
 
-    // Wait for widget to be fully rendered
-    // For FAB (step 2), wait longer and ensure Scaffold is built
-    if (_tourStep == 2) {
-      // Wait for next frame to ensure Scaffold is built
-      await WidgetsBinding.instance.endOfFrame;
-      await Future.delayed(const Duration(milliseconds: 300));
-      
-      // Try to find Scaffold and ensure FAB is rendered
-      final scaffold = context.findAncestorWidgetOfExactType<Scaffold>();
-      if (scaffold != null && mounted) {
-        // Force a frame to ensure FAB is rendered
-        await Future.delayed(const Duration(milliseconds: 200));
-      }
-    } else {
-      await Future.delayed(const Duration(milliseconds: 200));
-    }
+    // Wait for widget to be fully rendered - minimal delay
+    await WidgetsBinding.instance.endOfFrame;
+    await Future.delayed(const Duration(milliseconds: 100));
     
     if (!mounted) {
       _notifyTourState(false);
       return;
     }
 
-    // Wait for target key to be available
-    // For FAB, try more times and wait longer
-    int maxAttempts = _tourStep == 2 ? 40 : 20;
-    int waitInterval = _tourStep == 2 ? 150 : 100;
+    // Wait for target key to be available - faster for FAB since it's always visible now
+    int maxAttempts = _tourStep == 2 ? 25 : 15;
+    int waitInterval = 80;
     int attempts = 0;
     
     while (attempts < maxAttempts && mounted && (targetKey?.currentContext == null)) {
       await Future.delayed(Duration(milliseconds: waitInterval));
       attempts++;
-      
-      // For FAB, try to access it through Navigator
-      if (_tourStep == 2 && attempts % 5 == 0 && mounted) {
-        // Force a rebuild to ensure FAB is rendered
-        setState(() {});
-        await Future.delayed(const Duration(milliseconds: 50));
-      }
     }
     
     if (targetKey?.currentContext == null || !mounted) {
@@ -673,12 +652,44 @@ class _HomeScreenState extends State<HomeScreen> {
         actionIcon: Icons.telegram,
         onActionTap: () async {
           try {
-            // Use only https:// link - works in browser and Telegram app
             final url = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
-              throw Exception('Could not launch URL');
+            
+            // Try multiple launch modes for maximum compatibility
+            bool launched = false;
+            
+            // First try: external application (preferred)
+            try {
+              if (await canLaunchUrl(url)) {
+                launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            } catch (e) {
+              LoggerService.d('HomeScreen', 'External launch failed, trying platform default');
+            }
+            
+            // Second try: platform default
+            if (!launched) {
+              try {
+                if (await canLaunchUrl(url)) {
+                  launched = await launchUrl(url, mode: LaunchMode.platformDefault);
+                }
+              } catch (e) {
+                LoggerService.d('HomeScreen', 'Platform default launch failed, trying inAppWebView');
+              }
+            }
+            
+            // Third try: inAppWebView as last resort
+            if (!launched) {
+              try {
+                if (await canLaunchUrl(url)) {
+                  launched = await launchUrl(url, mode: LaunchMode.inAppWebView);
+                }
+              } catch (e) {
+                LoggerService.e('HomeScreen', 'All launch methods failed');
+              }
+            }
+            
+            if (!launched) {
+              throw Exception('Could not launch URL with any method');
             }
           } catch (e) {
             LoggerService.e('HomeScreen', 'Error opening Telegram channel', e);
@@ -686,7 +697,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Could not open Telegram. Please try opening manually: https://t.me/+N5X_RGNw_FJkM2Q0',
+                    'Could not open Telegram. Please copy and open manually: https://t.me/+N5X_RGNw_FJkM2Q0',
                     style: TextStyle(fontSize: 12.sp),
                   ),
                   duration: const Duration(seconds: 5),

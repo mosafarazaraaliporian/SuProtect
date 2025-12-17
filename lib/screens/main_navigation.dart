@@ -102,7 +102,7 @@ class _MainNavigationState extends State<MainNavigation> {
             index: _currentIndex,
             children: _screens,
           ),
-          floatingActionButton: _currentIndex == 1 && !_isTourActive // Only show on Home and when tour is not active
+          floatingActionButton: _currentIndex == 1 // Always show on Home (even during tour)
               ? FloatingActionButton(
                   key: _fabKey,
                   onPressed: _isTourActive ? null : _onUploadPressed,
