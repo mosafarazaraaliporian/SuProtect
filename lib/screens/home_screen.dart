@@ -237,21 +237,42 @@ class _HomeScreenState extends State<HomeScreen> {
         description = 'Tap the + button to upload your APK file for protection.';
         targetKey = widget.fabKey;
         LoggerService.d('HomeScreen', 'Tour step 2: Upload button (FAB)');
+        // Try to find FAB from Scaffold if key is not available
+        if (targetKey?.currentContext == null) {
+          // Wait a bit more and try to find Scaffold
+          await Future.delayed(const Duration(milliseconds: 300));
+          final scaffold = context.findAncestorWidgetOfExactType<Scaffold>();
+          if (scaffold != null && mounted) {
+            // FAB should be available now
+            LoggerService.d('HomeScreen', 'Scaffold found, waiting for FAB');
+          }
+        }
         break;
     }
 
     // Wait for widget to be fully rendered
-    await Future.delayed(const Duration(milliseconds: 200));
+    // For FAB (step 2), wait longer as it might not be visible yet
+    int waitTime = _tourStep == 2 ? 500 : 200;
+    await Future.delayed(Duration(milliseconds: waitTime));
     if (!mounted) {
       _notifyTourState(false);
       return;
     }
 
     // Wait for target key to be available
+    // For FAB, try more times and wait longer
+    int maxAttempts = _tourStep == 2 ? 30 : 20;
+    int waitInterval = _tourStep == 2 ? 150 : 100;
     int attempts = 0;
-    while (attempts < 20 && mounted && (targetKey?.currentContext == null)) {
-      await Future.delayed(const Duration(milliseconds: 100));
+    
+    while (attempts < maxAttempts && mounted && (targetKey?.currentContext == null)) {
+      await Future.delayed(Duration(milliseconds: waitInterval));
       attempts++;
+      
+      // Force a rebuild to ensure FAB is rendered
+      if (_tourStep == 2 && attempts % 5 == 0 && mounted) {
+        setState(() {});
+      }
     }
     
     if (targetKey?.currentContext == null || !mounted) {
@@ -329,8 +350,12 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_tourStep == 2) {
         // FAB - show above
         tooltipTop = (position.dy - tooltipHeight - 20).clamp(20.0, screenHeight - tooltipHeight - 20);
+      } else if (_tourStep == 1) {
+        // Welcome section - center vertically on screen
+        tooltipTop = (screenHeight / 2) - (tooltipHeight / 2);
+        tooltipTop = tooltipTop.clamp(20.0, screenHeight - tooltipHeight - 20);
       } else {
-        // Stories/Welcome - show below first, then above if not enough space
+        // Stories - show below first, then above if not enough space
         tooltipTop = position.dy + size.height + 20;
         if (tooltipTop + tooltipHeight > screenHeight - 20) {
           tooltipTop = (position.dy - tooltipHeight - 20).clamp(20.0, screenHeight - tooltipHeight - 20);
@@ -643,26 +668,12 @@ class _HomeScreenState extends State<HomeScreen> {
         actionIcon: Icons.telegram,
         onActionTap: () async {
           try {
-            // Try using tg:// protocol first (works better for invite links)
-            final tgUrl = Uri.parse('tg://join?invite=N5X_RGNw_FJkM2Q0');
-            final httpsUrl = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
-            
-            // Try tg:// first
-            if (await canLaunchUrl(tgUrl)) {
-              await launchUrl(tgUrl, mode: LaunchMode.externalApplication);
-            } 
-            // Fallback to https://
-            else if (await canLaunchUrl(httpsUrl)) {
-              await launchUrl(httpsUrl, mode: LaunchMode.externalApplication);
-            } 
-            // If both fail, try opening in browser
-            else {
-              final webUrl = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
-              if (await canLaunchUrl(webUrl)) {
-                await launchUrl(webUrl, mode: LaunchMode.externalApplication);
-              } else {
-                throw Exception('Could not launch URL');
-              }
+            // Use only https:// link - works in browser and Telegram app
+            final url = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              throw Exception('Could not launch URL');
             }
           } catch (e) {
             LoggerService.e('HomeScreen', 'Error opening Telegram channel', e);
@@ -670,7 +681,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Could not open Telegram. Please install Telegram app or try opening manually: https://t.me/+N5X_RGNw_FJkM2Q0',
+                    'Could not open Telegram. Please try opening manually: https://t.me/+N5X_RGNw_FJkM2Q0',
                     style: TextStyle(fontSize: 12.sp),
                   ),
                   duration: const Duration(seconds: 5),

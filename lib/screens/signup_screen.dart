@@ -141,17 +141,17 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
       builder: (context, child) {
         final isFocused = focusNode.hasFocus;
         return Container(
-          margin: EdgeInsets.only(bottom: 16.h),
+          margin: EdgeInsets.only(bottom: 12.h),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.r),
+            borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
                 color: isFocused 
-                    ? const Color(0xFF9C88FF).withOpacity(0.4)
-                    : Colors.black.withOpacity(0.1),
-                blurRadius: isFocused ? 20 : 10,
-                spreadRadius: isFocused ? 2 : 0,
-                offset: Offset(0, isFocused ? 6.h : 4.h),
+                    ? const Color(0xFF9C88FF).withOpacity(0.3)
+                    : Colors.black.withOpacity(0.08),
+                blurRadius: isFocused ? 15 : 8,
+                spreadRadius: isFocused ? 1 : 0,
+                offset: Offset(0, isFocused ? 4.h : 2.h),
               ),
             ],
           ),
@@ -160,27 +160,27 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
             focusNode: focusNode,
             obscureText: obscureText,
             keyboardType: keyboardType,
-            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
             decoration: InputDecoration(
               labelText: label,
               labelStyle: TextStyle(
                 color: isFocused ? const Color(0xFF9C88FF) : Colors.grey[600],
-                fontSize: 14.sp,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
               ),
               prefixIcon: Container(
-                margin: EdgeInsets.all(12.w),
-                padding: EdgeInsets.all(8.w),
+                margin: EdgeInsets.all(10.w),
+                padding: EdgeInsets.all(6.w),
                 decoration: BoxDecoration(
                   color: isFocused 
                       ? const Color(0xFF9C88FF).withOpacity(0.1)
                       : Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
                   icon,
                   color: isFocused ? const Color(0xFF9C88FF) : Colors.grey[600],
-                  size: 20.sp,
+                  size: 18.sp,
                 ),
               ),
               suffixIcon: showSuffixIcon
@@ -188,27 +188,27 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                       icon: Icon(
                         obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                         color: Colors.grey[600],
-                        size: 20.sp,
+                        size: 18.sp,
                       ),
                       onPressed: onSuffixTap,
                     )
                   : null,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.r),
+                borderRadius: BorderRadius.circular(16.r),
                 borderSide: BorderSide(
                   color: isFocused ? const Color(0xFF9C88FF) : Colors.transparent,
                   width: 2,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.r),
+                borderRadius: BorderRadius.circular(16.r),
                 borderSide: BorderSide(
                   color: isFocused ? const Color(0xFF9C88FF) : Colors.transparent,
                   width: 2,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.r),
+                borderRadius: BorderRadius.circular(16.r),
                 borderSide: const BorderSide(
                   color: Color(0xFF9C88FF),
                   width: 2,
@@ -216,7 +216,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
               ),
               filled: true,
               fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             ),
             validator: validator,
           ),
@@ -273,7 +273,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                             Text(
                               'Create Account',
                               style: TextStyle(
-                                fontSize: 22.sp,
+                                fontSize: 18.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 letterSpacing: 0.5,
@@ -291,7 +291,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                // Animated Icon
+                                // Animated Icon - smaller
                                 TweenAnimationBuilder<double>(
                                   tween: Tween(begin: 0.0, end: 1.0),
                                   duration: const Duration(milliseconds: 800),
@@ -300,9 +300,9 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                     return Transform.scale(
                                       scale: value,
                                       child: Container(
-                                        width: 80.w,
-                                        height: 80.w,
-                                        margin: EdgeInsets.only(bottom: 24.h),
+                                        width: 60.w,
+                                        height: 60.w,
+                                        margin: EdgeInsets.only(bottom: 16.h),
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           gradient: LinearGradient(
@@ -317,19 +317,19 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                           boxShadow: [
                                             BoxShadow(
                                               color: Colors.white.withOpacity(0.2),
-                                              blurRadius: 20,
-                                              spreadRadius: 3,
+                                              blurRadius: 15,
+                                              spreadRadius: 2,
                                             ),
                                             BoxShadow(
                                               color: Colors.black.withOpacity(0.15),
-                                              blurRadius: 15,
+                                              blurRadius: 10,
                                               spreadRadius: 1,
                                             ),
                                           ],
                                         ),
                                         child: Icon(
                                           Icons.person_add_outlined,
-                                          size: 40.sp,
+                                          size: 28.sp,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -339,31 +339,31 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                 Text(
                                   'Join SuProtect',
                                   style: TextStyle(
-                                    fontSize: 28.sp,
+                                    fontSize: 22.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
-                                    letterSpacing: 0.8,
+                                    letterSpacing: 0.5,
                                     shadows: [
                                       Shadow(
                                         color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 8,
+                                        blurRadius: 6,
                                         offset: Offset(0, 2.h),
                                       ),
                                     ],
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(height: 8.h),
+                                SizedBox(height: 4.h),
                                 Text(
                                   'Create your account',
                                   style: TextStyle(
-                                    fontSize: 13.sp,
+                                    fontSize: 12.sp,
                                     color: Colors.white.withOpacity(0.9),
                                     fontWeight: FontWeight.w400,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(height: 32.h),
+                                SizedBox(height: 24.h),
                                 // Username field
                                 _buildTextField(
                                   controller: _usernameController,
@@ -443,12 +443,12 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                     return null;
                                   },
                                 ),
-                            SizedBox(height: 20.h),
-                            // Sign up button
+                            SizedBox(height: 16.h),
+                            // Sign up button - smaller
                             Container(
-                              height: 50.h,
+                              height: 44.h,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.r),
+                                    borderRadius: BorderRadius.circular(16.r),
                                     gradient: LinearGradient(
                                       colors: [
                                         Colors.white,
@@ -457,10 +457,10 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.white.withOpacity(0.5),
-                                        blurRadius: 20,
-                                        spreadRadius: 3,
-                                        offset: Offset(0, 8.h),
+                                        color: Colors.white.withOpacity(0.4),
+                                        blurRadius: 15,
+                                        spreadRadius: 2,
+                                        offset: Offset(0, 6.h),
                                       ),
                                     ],
                                   ),
@@ -470,14 +470,14 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                       backgroundColor: Colors.transparent,
                                       shadowColor: Colors.transparent,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20.r),
+                                        borderRadius: BorderRadius.circular(16.r),
                                       ),
                                       elevation: 0,
                                     ),
                                     child: _isLoading
                                         ? SizedBox(
-                                            height: 24.h,
-                                            width: 24.w,
+                                            height: 20.h,
+                                            width: 20.w,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2.5,
                                               valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF9C88FF)),
@@ -489,23 +489,23 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                               Text(
                                                 'Create Account',
                                                 style: TextStyle(
-                                                  fontSize: 17.sp,
+                                                  fontSize: 15.sp,
                                                   fontWeight: FontWeight.bold,
                                                   color: const Color(0xFF9C88FF),
-                                                  letterSpacing: 1,
+                                                  letterSpacing: 0.5,
                                                 ),
                                               ),
-                                              SizedBox(width: 8.w),
+                                              SizedBox(width: 6.w),
                                               Icon(
                                                 Icons.arrow_forward_rounded,
                                                 color: const Color(0xFF9C88FF),
-                                                size: 20.sp,
+                                                size: 18.sp,
                                               ),
                                             ],
                                           ),
                                   ),
                                 ),
-                            SizedBox(height: 24.h),
+                            SizedBox(height: 20.h),
                             // Divider
                             Row(
                               children: [
@@ -535,14 +535,14 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                               ],
                             ),
                             SizedBox(height: 24.h),
-                            // Login link
+                            // Login link - smaller
                             Container(
-                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              padding: EdgeInsets.symmetric(vertical: 10.h),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.r),
+                                    borderRadius: BorderRadius.circular(16.r),
                                     border: Border.all(
                                       color: Colors.white.withOpacity(0.3),
-                                      width: 2,
+                                      width: 1.5,
                                     ),
                                   ),
                                   child: Row(
@@ -551,7 +551,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                       Text(
                                         'Already have an account? ',
                                         style: TextStyle(
-                                          fontSize: 14.sp,
+                                          fontSize: 12.sp,
                                           color: Colors.white.withOpacity(0.9),
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -563,7 +563,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                       child: Text(
                                         'Login',
                                         style: TextStyle(
-                                          fontSize: 13.sp,
+                                          fontSize: 12.sp,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                           decoration: TextDecoration.underline,
@@ -574,7 +574,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 16.h),
                               ],
                             ),
                           ),
