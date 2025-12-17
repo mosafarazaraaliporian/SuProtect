@@ -642,7 +642,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actionLabel: 'Join Channel',
         actionIcon: Icons.telegram,
         onActionTap: () async {
-          final url = Uri.parse('https://t.me/suprotect'); // Telegram channel link
+          final url = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0'); // Telegram channel link
           if (await canLaunchUrl(url)) {
             await launchUrl(url, mode: LaunchMode.externalApplication);
           } else {
