@@ -9,6 +9,7 @@ import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
 import '../services/logger_service.dart';
 import '../services/api_service.dart';
+import '../services/stories_service.dart';
 import 'story_view_screen.dart';
 import 'upload_apk_screen.dart';
 
@@ -39,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey _welcomeKey = GlobalKey();
   BuildContext? _tourDialogContext;
   OverlayEntry? _tourOverlayEntry;
+  List<StoryData>? _stories; // Stories from Firebase
+  bool _isLoadingStories = false;
 
   @override
   void initState() {
@@ -114,6 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _hasSeenWelcomeStory = prefs.getBool('has_seen_welcome_story') ?? false;
     LoggerService.d('HomeScreen', 'Has seen welcome story: $_hasSeenWelcomeStory');
     
+    // Load stories from Firebase
+    await _loadStories();
+    
     if (!_hasSeenWelcomeStory && mounted) {
       // Show welcome story after a short delay
       Future.delayed(const Duration(milliseconds: 500), () {
@@ -122,6 +128,100 @@ class _HomeScreenState extends State<HomeScreen> {
           _showWelcomeStory();
         }
       });
+    }
+  }
+
+  Future<void> _loadStories() async {
+    if (_isLoadingStories) return;
+    
+    setState(() {
+      _isLoadingStories = true;
+    });
+    
+    try {
+      final stories = await StoriesService().getStories();
+      
+      // Process stories to add Telegram action callback
+      final processedStories = stories.map((story) {
+        // If story has action but no callback, add Telegram callback
+        if (story.actionLabel != null && story.onActionTap == null) {
+          return StoryData(
+            title: story.title,
+            message: story.message,
+            backgroundColor: story.backgroundColor,
+            icon: story.icon,
+            actionLabel: story.actionLabel,
+            actionIcon: story.actionIcon,
+            onActionTap: () async {
+              await _openTelegramChannel();
+            },
+          );
+        }
+        return story;
+      }).toList();
+      
+      if (mounted) {
+        setState(() {
+          _stories = processedStories;
+          _isLoadingStories = false;
+        });
+      }
+    } catch (e) {
+      LoggerService.e('HomeScreen', 'Error loading stories', e);
+      if (mounted) {
+        setState(() {
+          _isLoadingStories = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _openTelegramChannel() async {
+    try {
+      final url = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
+      
+      // Direct launch without checking canLaunchUrl - try all methods
+      bool launched = false;
+      
+      // Try 1: external application
+      try {
+        launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        LoggerService.d('HomeScreen', 'External launch failed: $e');
+      }
+      
+      // Try 2: platform default
+      if (!launched) {
+        try {
+          launched = await launchUrl(url, mode: LaunchMode.platformDefault);
+        } catch (e) {
+          LoggerService.d('HomeScreen', 'Platform default failed: $e');
+        }
+      }
+      
+      // Try 3: inAppWebView
+      if (!launched) {
+        try {
+          launched = await launchUrl(url, mode: LaunchMode.inAppWebView);
+        } catch (e) {
+          LoggerService.d('HomeScreen', 'InAppWebView failed: $e');
+        }
+      }
+      
+      // Try 4: externalNonBrowserApplication
+      if (!launched) {
+        try {
+          launched = await launchUrl(url, mode: LaunchMode.externalNonBrowserApplication);
+        } catch (e) {
+          LoggerService.d('HomeScreen', 'ExternalNonBrowser failed: $e');
+        }
+      }
+      
+      if (!launched) {
+        LoggerService.e('HomeScreen', 'All launch methods failed for Telegram');
+      }
+    } catch (e, stackTrace) {
+      LoggerService.e('HomeScreen', 'Error opening Telegram channel', e, stackTrace);
     }
   }
 
@@ -582,7 +682,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _showWelcomeStory() async {
-    final stories = _getStoriesList(0);
+    final stories = _stories ?? _getStoriesList(0);
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -1136,7 +1236,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.star,
             color: Colors.orange,
             onTap: () {
-              final stories = _getStoriesList(1);
+              final stories = _stories ?? _getStoriesList(1);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -1153,7 +1253,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.lightbulb,
             color: Colors.amber,
             onTap: () {
-              final stories = _getStoriesList(2);
+              final stories = _stories ?? _getStoriesList(2);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -1170,7 +1270,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.telegram,
             color: const Color(0xFF0088cc),
             onTap: () {
-              final stories = _getStoriesList(3);
+              final stories = _stories ?? _getStoriesList(3);
               Navigator.push(
                 context,
                 MaterialPageRoute(
