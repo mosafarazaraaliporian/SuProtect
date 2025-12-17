@@ -654,56 +654,48 @@ class _HomeScreenState extends State<HomeScreen> {
           try {
             final url = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
             
-            // Try multiple launch modes for maximum compatibility
+            // Direct launch without checking canLaunchUrl - try all methods
             bool launched = false;
             
-            // First try: external application (preferred)
+            // Try 1: external application
             try {
-              if (await canLaunchUrl(url)) {
-                launched = await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
+              launched = await launchUrl(url, mode: LaunchMode.externalApplication);
             } catch (e) {
-              LoggerService.d('HomeScreen', 'External launch failed, trying platform default');
+              LoggerService.d('HomeScreen', 'External launch failed: $e');
             }
             
-            // Second try: platform default
+            // Try 2: platform default
             if (!launched) {
               try {
-                if (await canLaunchUrl(url)) {
-                  launched = await launchUrl(url, mode: LaunchMode.platformDefault);
-                }
+                launched = await launchUrl(url, mode: LaunchMode.platformDefault);
               } catch (e) {
-                LoggerService.d('HomeScreen', 'Platform default launch failed, trying inAppWebView');
+                LoggerService.d('HomeScreen', 'Platform default failed: $e');
               }
             }
             
-            // Third try: inAppWebView as last resort
+            // Try 3: inAppWebView
             if (!launched) {
               try {
-                if (await canLaunchUrl(url)) {
-                  launched = await launchUrl(url, mode: LaunchMode.inAppWebView);
-                }
+                launched = await launchUrl(url, mode: LaunchMode.inAppWebView);
               } catch (e) {
-                LoggerService.e('HomeScreen', 'All launch methods failed');
+                LoggerService.d('HomeScreen', 'InAppWebView failed: $e');
+              }
+            }
+            
+            // Try 4: externalNonBrowserApplication
+            if (!launched) {
+              try {
+                launched = await launchUrl(url, mode: LaunchMode.externalNonBrowserApplication);
+              } catch (e) {
+                LoggerService.d('HomeScreen', 'ExternalNonBrowser failed: $e');
               }
             }
             
             if (!launched) {
-              throw Exception('Could not launch URL with any method');
+              LoggerService.e('HomeScreen', 'All launch methods failed for Telegram');
             }
-          } catch (e) {
-            LoggerService.e('HomeScreen', 'Error opening Telegram channel', e);
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Could not open Telegram. Please copy and open manually: https://t.me/+N5X_RGNw_FJkM2Q0',
-                    style: TextStyle(fontSize: 12.sp),
-                  ),
-                  duration: const Duration(seconds: 5),
-                ),
-              );
-            }
+          } catch (e, stackTrace) {
+            LoggerService.e('HomeScreen', 'Error opening Telegram channel', e, stackTrace);
           }
         },
       ),

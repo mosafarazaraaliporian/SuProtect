@@ -154,34 +154,36 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
         return Scaffold(
           backgroundColor: Colors.black,
           body: GestureDetector(
-            // Swipe gestures for navigation - improved sensitivity
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity != null) {
-                // Lower threshold for easier swiping
-                if (details.primaryVelocity! > 200) {
-                  // Swipe right - previous story
-                  _previousStory();
-                } else if (details.primaryVelocity! < -200) {
-                  // Swipe left - next story
-                  _nextStory();
-                }
+            // Tap on right side to go to next story, left side to go to previous
+            onTapDown: (details) {
+              final screenWidth = MediaQuery.of(context).size.width;
+              final tapX = details.globalPosition.dx;
+              
+              // Right side (more than 60% of screen) - next story
+              if (tapX > screenWidth * 0.6) {
+                _nextStory();
+              }
+              // Left side (less than 40% of screen) - previous story
+              else if (tapX < screenWidth * 0.4) {
+                _previousStory();
+              }
+              // Center - pause/resume
+              else {
+                setState(() => _isPaused = true);
               }
             },
-            // Also handle drag update for better responsiveness
-            onHorizontalDragUpdate: (details) {
-              // Allow dragging to show next/previous
-              if (details.delta.dx > 10) {
-                // Dragging right - could show previous
-              } else if (details.delta.dx < -10) {
-                // Dragging left - could show next
+            onTapUp: (details) {
+              final screenWidth = MediaQuery.of(context).size.width;
+              final tapX = details.globalPosition.dx;
+              
+              // Only resume if tapped in center
+              if (tapX >= screenWidth * 0.4 && tapX <= screenWidth * 0.6) {
+                setState(() => _isPaused = false);
               }
             },
-            // Tap to pause/resume
-            onTapDown: (_) => setState(() => _isPaused = true),
-            onTapUp: (_) => setState(() => _isPaused = false),
-            onTapCancel: () => setState(() => _isPaused = false),
-            // Double tap to go to next
-            onDoubleTap: () => _nextStory(),
+            onTapCancel: () {
+              setState(() => _isPaused = false);
+            },
             child: Stack(
               children: [
                 // Background gradient
