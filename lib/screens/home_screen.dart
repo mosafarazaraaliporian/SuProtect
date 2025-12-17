@@ -642,14 +642,38 @@ class _HomeScreenState extends State<HomeScreen> {
         actionLabel: 'Join Channel',
         actionIcon: Icons.telegram,
         onActionTap: () async {
-          final url = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0'); // Telegram channel link
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          } else {
+          try {
+            // Try using tg:// protocol first (works better for invite links)
+            final tgUrl = Uri.parse('tg://join?invite=N5X_RGNw_FJkM2Q0');
+            final httpsUrl = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
+            
+            // Try tg:// first
+            if (await canLaunchUrl(tgUrl)) {
+              await launchUrl(tgUrl, mode: LaunchMode.externalApplication);
+            } 
+            // Fallback to https://
+            else if (await canLaunchUrl(httpsUrl)) {
+              await launchUrl(httpsUrl, mode: LaunchMode.externalApplication);
+            } 
+            // If both fail, try opening in browser
+            else {
+              final webUrl = Uri.parse('https://t.me/+N5X_RGNw_FJkM2Q0');
+              if (await canLaunchUrl(webUrl)) {
+                await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+              } else {
+                throw Exception('Could not launch URL');
+              }
+            }
+          } catch (e) {
+            LoggerService.e('HomeScreen', 'Error opening Telegram channel', e);
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Could not open Telegram', style: TextStyle(fontSize: 12.sp)),
+                  content: Text(
+                    'Could not open Telegram. Please install Telegram app or try opening manually: https://t.me/+N5X_RGNw_FJkM2Q0',
+                    style: TextStyle(fontSize: 12.sp),
+                  ),
+                  duration: const Duration(seconds: 5),
                 ),
               );
             }
