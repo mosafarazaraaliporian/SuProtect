@@ -15,8 +15,9 @@ import 'upload_apk_screen.dart';
 class HomeScreen extends StatefulWidget {
   final String? jobId; // Changed from uploadFileName to jobId
   final GlobalKey? fabKey;
+  final Function(bool)? onTourStateChanged; // Callback to notify parent about tour state
   
-  const HomeScreen({super.key, this.jobId, this.fabKey});
+  const HomeScreen({super.key, this.jobId, this.fabKey, this.onTourStateChanged});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -30,12 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _statusCheckTimer;
   bool _hasSeenTour = false;
   int _tourStep = 0;
+  bool _isTourActive = false; // Track if tour is currently active
   bool _isProcessing = false;
   String? _processingMessage;
   String? _downloadUrl;
   final GlobalKey _storiesKey = GlobalKey();
   final GlobalKey _welcomeKey = GlobalKey();
   BuildContext? _tourDialogContext;
+  OverlayEntry? _tourOverlayEntry;
 
   @override
   void initState() {
@@ -91,7 +94,18 @@ class _HomeScreenState extends State<HomeScreen> {
     LoggerService.logMethod('HomeScreen', 'dispose');
     _statusCheckTimer?.cancel();
     _closeTourDialog();
+    _removeTourOverlay();
     super.dispose();
+  }
+  
+  void _notifyTourState(bool isActive) {
+    _isTourActive = isActive;
+    widget.onTourStateChanged?.call(isActive);
+  }
+  
+  void _removeTourOverlay() {
+    _tourOverlayEntry?.remove();
+    _tourOverlayEntry = null;
   }
 
   Future<void> _checkWelcomeStory() async {
@@ -123,37 +137,53 @@ class _HomeScreenState extends State<HomeScreen> {
     LoggerService.logMethod('HomeScreen', '_showTour');
     LoggerService.logUserAction('show_tour');
     
-    // Close any existing dialog first
-    if (_tourDialogContext != null) {
-      LoggerService.w('HomeScreen', 'Closing existing tour dialog');
-      Navigator.of(_tourDialogContext!).pop();
-      _tourDialogContext = null;
-    }
+    // Notify parent that tour is starting
+    _notifyTourState(true);
+    
+    // Close any existing dialog/overlay first
+    _closeTourDialog();
+    _removeTourOverlay();
     
     setState(() {
       _tourStep = 0;
     });
     LoggerService.d('HomeScreen', 'Tour step reset to 0');
     
-    // Wait a bit for the UI to be ready
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        LoggerService.d('HomeScreen', 'Starting tour step after delay');
-        _showTourStep();
-      } else {
-        LoggerService.w('HomeScreen', 'Widget not mounted, cannot start tour');
-      }
+    // Wait for UI to be fully rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          LoggerService.d('HomeScreen', 'Starting tour step after delay');
+          _showTourStep();
+        } else {
+          LoggerService.w('HomeScreen', 'Widget not mounted, cannot start tour');
+          _notifyTourState(false);
+        }
+      });
     });
   }
 
   void _closeTourDialog() {
     if (_tourDialogContext != null) {
       LoggerService.d('HomeScreen', 'Closing tour dialog');
-      Navigator.of(_tourDialogContext!).pop();
+      try {
+        Navigator.of(_tourDialogContext!).pop();
+      } catch (e) {
+        LoggerService.w('HomeScreen', 'Error closing dialog: $e');
+      }
       _tourDialogContext = null;
-    } else {
-      LoggerService.v('HomeScreen', 'No tour dialog to close');
     }
+    _removeTourOverlay();
+  }
+  
+  void _finishTour() {
+    LoggerService.i('HomeScreen', 'Finishing tour');
+    _closeTourDialog();
+    _notifyTourState(false);
+    setState(() {
+      _tourStep = 0;
+      _hasSeenTour = true;
+    });
   }
 
   void _showTourStep() async {
@@ -164,10 +194,12 @@ class _HomeScreenState extends State<HomeScreen> {
     
     if (!mounted) {
       LoggerService.w('HomeScreen', 'Widget not mounted, cannot show tour step');
+      _notifyTourState(false);
       return;
     }
     
-    // Close previous dialog if exists
+    // Close previous overlay/dialog if exists
+    _removeTourOverlay();
     _closeTourDialog();
     
     if (_tourStep >= 3) {
@@ -178,6 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _hasSeenTour = true;
         });
+        _notifyTourState(false);
       }
       return;
     }
@@ -207,13 +240,16 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
     }
 
-    // Wait for next frame to ensure widget is fully built
-    await Future.delayed(const Duration(milliseconds: 150));
-    if (!mounted) return;
+    // Wait for widget to be fully rendered
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) {
+      _notifyTourState(false);
+      return;
+    }
 
-    // Wait for target key to be available with more attempts
+    // Wait for target key to be available
     int attempts = 0;
-    while (attempts < 15 && mounted && (targetKey?.currentContext == null)) {
+    while (attempts < 20 && mounted && (targetKey?.currentContext == null)) {
       await Future.delayed(const Duration(milliseconds: 100));
       attempts++;
     }
@@ -232,7 +268,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      // Get render box - NEW APPROACH: use context directly
       final BuildContext? targetContext = targetKey?.currentContext;
       if (targetContext == null || !mounted) {
         LoggerService.w('HomeScreen', 'Target context is null');
@@ -262,83 +297,89 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      // Get position relative to screen - NEW APPROACH: use localToGlobal correctly
+      // Get position relative to screen with proper offset calculation
       final Offset position = renderBox.localToGlobal(Offset.zero);
       final Size size = renderBox.size;
       
+      // Get MediaQuery for accurate screen dimensions
+      final MediaQueryData mediaQuery = MediaQuery.of(context);
+      final screenSize = mediaQuery.size;
+      final viewPadding = mediaQuery.viewPadding;
+      final screenHeight = screenSize.height;
+      final screenWidth = screenSize.width;
+      
       LoggerService.d('HomeScreen', 'Element position: $position, size: $size');
+      LoggerService.d('HomeScreen', 'Screen size: $screenSize, viewPadding: $viewPadding');
       
       if (!mounted) return;
 
-      // Show dialog with correct positioning
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        barrierColor: Colors.black.withOpacity(0.75),
-        builder: (dialogContext) {
-          if (!mounted) return const SizedBox();
-          
-          _tourDialogContext = dialogContext;
-          
-          final screenSize = MediaQuery.of(dialogContext).size;
-          final screenHeight = screenSize.height;
-          final screenWidth = screenSize.width;
-          
-          // NEW APPROACH: Use actual position directly, with padding
-          final padding = 8.0;
-          final highlightLeft = (position.dx - padding).clamp(0.0, screenWidth);
-          final highlightTop = (position.dy - padding).clamp(0.0, screenHeight);
-          final highlightRight = (position.dx + size.width + padding).clamp(0.0, screenWidth);
-          final highlightBottom = (position.dy + size.height + padding).clamp(0.0, screenHeight);
-          final highlightWidth = highlightRight - highlightLeft;
-          final highlightHeight = highlightBottom - highlightTop;
-          
-          // Calculate tooltip position
-          double tooltipTop;
-          if (_tourStep == 2) {
-            // FAB - show above
-            tooltipTop = (position.dy - 220).clamp(20.0, screenHeight - 300.0);
-          } else {
-            // Stories/Welcome - show below, or above if not enough space
-            tooltipTop = position.dy + size.height + 30;
-            if (tooltipTop + 250 > screenHeight) {
-              tooltipTop = (position.dy - 250).clamp(20.0, screenHeight - 300.0);
-            }
-            tooltipTop = tooltipTop.clamp(20.0, screenHeight - 300.0);
-          }
-          
-          LoggerService.v('HomeScreen', 'Highlight: ($highlightLeft, $highlightTop) ${highlightWidth}x$highlightHeight');
-          LoggerService.v('HomeScreen', 'Tooltip top: $tooltipTop');
+      // Calculate highlight area with padding
+      final padding = 12.0;
+      final highlightLeft = (position.dx - padding).clamp(0.0, screenWidth);
+      final highlightTop = (position.dy - padding).clamp(0.0, screenHeight);
+      final highlightRight = (position.dx + size.width + padding).clamp(0.0, screenWidth);
+      final highlightBottom = (position.dy + size.height + padding).clamp(0.0, screenHeight);
+      final highlightWidth = highlightRight - highlightLeft;
+      final highlightHeight = highlightBottom - highlightTop;
+      
+      // Calculate tooltip position - better positioning logic
+      double tooltipTop;
+      double tooltipHeight = 250.0; // Approximate tooltip height
+      
+      if (_tourStep == 2) {
+        // FAB - show above
+        tooltipTop = (position.dy - tooltipHeight - 20).clamp(20.0, screenHeight - tooltipHeight - 20);
+      } else {
+        // Stories/Welcome - show below first, then above if not enough space
+        tooltipTop = position.dy + size.height + 20;
+        if (tooltipTop + tooltipHeight > screenHeight - 20) {
+          tooltipTop = (position.dy - tooltipHeight - 20).clamp(20.0, screenHeight - tooltipHeight - 20);
+        }
+        tooltipTop = tooltipTop.clamp(20.0, screenHeight - tooltipHeight - 20);
+      }
+      
+      LoggerService.v('HomeScreen', 'Highlight: ($highlightLeft, $highlightTop) ${highlightWidth}x$highlightHeight');
+      LoggerService.v('HomeScreen', 'Tooltip top: $tooltipTop');
 
+      // Create overlay entry
+      _tourOverlayEntry = OverlayEntry(
+        builder: (overlayContext) {
           return Material(
-            type: MaterialType.transparency,
+            color: Colors.transparent,
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Dark overlay
-                Container(
-                  color: Colors.black.withOpacity(0.7),
+                // Dark overlay with tap blocker
+                GestureDetector(
+                  onTap: () {
+                    // Prevent dismissing tour by tapping
+                  },
+                  child: Container(
+                    color: Colors.black.withOpacity(0.75),
+                  ),
                 ),
-                // Highlight area - use calculated position and size
+                // Highlight area - precise positioning
                 Positioned(
                   left: highlightLeft,
                   top: highlightTop,
-                  child: Container(
-                    width: highlightWidth,
-                    height: highlightHeight,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFF9C88FF),
-                        width: 4,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF9C88FF).withOpacity(0.5),
-                          blurRadius: 25,
-                          spreadRadius: 8,
+                  child: IgnorePointer(
+                    child: Container(
+                      width: highlightWidth,
+                      height: highlightHeight,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xFF9C88FF),
+                          width: 4,
                         ),
-                      ],
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF9C88FF).withOpacity(0.6),
+                            blurRadius: 30,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -349,16 +390,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: tooltipTop,
                   child: Material(
                     color: Colors.transparent,
+                    elevation: 8,
+                    borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 15,
+                            spreadRadius: 3,
                           ),
                         ],
                       ),
@@ -369,28 +412,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF9C88FF),
+                              color: const Color(0xFF9C88FF),
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8.h),
                           Text(
                             description,
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: TextStyle(
+                              fontSize: 13.sp,
                               color: Colors.black87,
                             ),
                             textAlign: TextAlign.center,
                           ),
                           // Show fake APK cards for step 1 (Welcome)
                           if (_tourStep == 1) ...[
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16.h),
                             _buildFakeApkCards(),
                           ],
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -398,20 +441,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 TextButton(
                                   onPressed: () {
                                     LoggerService.logUserAction('tour_previous', {'step': _tourStep});
-                                    _closeTourDialog();
+                                    _removeTourOverlay();
                                     if (mounted) {
                                       setState(() {
                                         _tourStep--;
                                       });
                                       LoggerService.d('HomeScreen', 'Tour step changed to: ${_tourStep - 1}');
-                                      Future.delayed(const Duration(milliseconds: 300), () {
+                                      Future.delayed(const Duration(milliseconds: 200), () {
                                         if (mounted) _showTourStep();
                                       });
                                     }
                                   },
-                                  child: const Text(
+                                  child: Text(
                                     'Previous',
-                                    style: TextStyle(fontSize: 12),
+                                    style: TextStyle(fontSize: 13.sp),
                                   ),
                                 )
                               else
@@ -419,9 +462,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Row(
                                 children: List.generate(3, (index) {
                                   return Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                                    width: 8,
-                                    height: 8,
+                                    margin: EdgeInsets.symmetric(horizontal: 4.w),
+                                    width: 8.w,
+                                    height: 8.w,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: index == _tourStep
@@ -437,9 +480,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'currentStep': _tourStep,
                                     'isFinish': _tourStep == 2,
                                   });
-                                  _closeTourDialog();
+                                  _removeTourOverlay();
                                   if (!mounted) {
                                     LoggerService.w('HomeScreen', 'Widget not mounted, cannot proceed');
+                                    _notifyTourState(false);
                                     return;
                                   }
                                   
@@ -448,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   });
                                   LoggerService.d('HomeScreen', 'Tour step incremented to: $_tourStep');
                                   
-                                  await Future.delayed(const Duration(milliseconds: 300));
+                                  await Future.delayed(const Duration(milliseconds: 200));
                                   if (mounted) {
                                     if (_tourStep < 3) {
                                       LoggerService.d('HomeScreen', 'Showing next tour step');
@@ -461,23 +505,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           _hasSeenTour = true;
                                         });
+                                        _notifyTourState(false);
                                         LoggerService.i('HomeScreen', 'Tour marked as seen');
                                       }
                                     }
                                   } else {
                                     LoggerService.w('HomeScreen', 'Widget not mounted after delay');
+                                    _notifyTourState(false);
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF9C88FF),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 8,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 10.h,
                                   ),
                                 ),
                                 child: Text(
                                   _tourStep == 2 ? 'Finish' : 'Next',
-                                  style: const TextStyle(fontSize: 12, color: Colors.white),
+                                  style: TextStyle(fontSize: 13.sp, color: Colors.white),
                                 ),
                               ),
                             ],
@@ -492,11 +538,16 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       );
+
+      // Insert overlay
+      Overlay.of(context).insert(_tourOverlayEntry!);
+      
     } catch (e, stackTrace) {
       // Handle error gracefully
       LoggerService.e('HomeScreen', 'Tour guide error', e, stackTrace);
       debugPrint('Tour guide error: $e');
-      _closeTourDialog();
+      _removeTourOverlay();
+      _notifyTourState(false);
       if (mounted) {
         // If error occurs, mark tour as seen to prevent infinite loop
         if (_tourStep >= 2) {
@@ -829,14 +880,22 @@ class _HomeScreenState extends State<HomeScreen> {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Home',
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+        return PopScope(
+          canPop: !_isTourActive, // Prevent back navigation during tour
+          onPopInvoked: (didPop) {
+            if (didPop && _isTourActive) {
+              // If somehow back was pressed, finish tour
+              _finishTour();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'Home',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              ),
+              automaticallyImplyLeading: false,
             ),
-            automaticallyImplyLeading: false,
-          ),
           body: LayoutBuilder(
             builder: (context, constraints) {
               return Column(
@@ -1006,6 +1065,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               );
             },
+          ),
           ),
         );
       },

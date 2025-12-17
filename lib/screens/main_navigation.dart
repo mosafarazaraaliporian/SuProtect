@@ -19,14 +19,27 @@ class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 1; // Start with Home (index 1)
   String? _uploadFileName;
   final GlobalKey _fabKey = GlobalKey();
+  bool _isTourActive = false; // Track if tour is active
 
   List<Widget> get _screens => [
     const ProfileScreen(),
-    HomeScreen(jobId: _uploadFileName, fabKey: _fabKey), // Changed: uploadFileName is now jobId
+    HomeScreen(
+      jobId: _uploadFileName,
+      fabKey: _fabKey,
+      onTourStateChanged: (isActive) {
+        setState(() {
+          _isTourActive = isActive;
+        });
+      },
+    ),
     const InfoScreen(),
   ];
 
   void _onItemTapped(int index) {
+    // Prevent navigation during tour
+    if (_isTourActive) {
+      return;
+    }
     setState(() {
       _currentIndex = index;
     });
@@ -89,10 +102,10 @@ class _MainNavigationState extends State<MainNavigation> {
             index: _currentIndex,
             children: _screens,
           ),
-          floatingActionButton: _currentIndex == 1 // Only show on Home (index 1)
+          floatingActionButton: _currentIndex == 1 && !_isTourActive // Only show on Home and when tour is not active
               ? FloatingActionButton(
                   key: _fabKey,
-                  onPressed: _onUploadPressed,
+                  onPressed: _isTourActive ? null : _onUploadPressed,
                   backgroundColor: primaryColor,
                   elevation: 8,
                   child: Icon(
@@ -138,27 +151,30 @@ class _MainNavigationState extends State<MainNavigation> {
     final isSelected = _currentIndex == index;
     return Expanded(
       child: InkWell(
-        onTap: () => _onItemTapped(index),
+        onTap: _isTourActive ? null : () => _onItemTapped(index),
         borderRadius: BorderRadius.circular(12.r),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
-              size: 24.sp,
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              label,
-              style: TextStyle(
+        child: Opacity(
+          opacity: _isTourActive ? 0.5 : 1.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
                 color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
-                fontSize: 11.sp,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                size: 24.sp,
               ),
-            ),
-          ],
+              SizedBox(height: 4.h),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                  fontSize: 11.sp,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -168,45 +184,48 @@ class _MainNavigationState extends State<MainNavigation> {
     final isSelected = _currentIndex == index;
     return Expanded(
       child: InkWell(
-        onTap: () => _onItemTapped(index),
+        onTap: _isTourActive ? null : () => _onItemTapped(index),
         borderRadius: BorderRadius.circular(16.r),
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 8.w),
-          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-          decoration: BoxDecoration(
-            color: isSelected ? primaryColor.withOpacity(0.15) : Colors.transparent,
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(8.w),
-                decoration: BoxDecoration(
-                  color: isSelected ? primaryColor : Colors.transparent,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected ? primaryColor : (isDark ? Colors.grey[400]! : Colors.grey[300]!),
-                    width: 2,
+        child: Opacity(
+          opacity: _isTourActive ? 0.5 : 1.0,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 8.w),
+            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: isSelected ? primaryColor.withOpacity(0.15) : Colors.transparent,
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    color: isSelected ? primaryColor : Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? primaryColor : (isDark ? Colors.grey[400]! : Colors.grey[300]!),
+                      width: 2,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.home,
+                    color: isSelected ? Colors.white : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                    size: 20.sp,
                   ),
                 ),
-                child: Icon(
-                  Icons.home,
-                  color: isSelected ? Colors.white : (isDark ? Colors.grey[400] : Colors.grey[600]),
-                  size: 20.sp,
+                SizedBox(height: 4.h),
+                Text(
+                  'Home',
+                  style: TextStyle(
+                    color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                    fontSize: 11.sp,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
                 ),
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                'Home',
-                style: TextStyle(
-                  color: isSelected ? primaryColor : (isDark ? Colors.grey[400] : Colors.grey[600]),
-                  fontSize: 11.sp,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
