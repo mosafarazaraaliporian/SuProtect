@@ -1,0 +1,40 @@
+{
+  "stories": {
+    "story1": {
+      "title": "Welcome to SuProtect!",
+      "message": "Your comprehensive app protection solution. Keep your applications secure and safe from various threats.",
+      "icon": "celebration",
+      "backgroundColor": "#9C88FF",
+      "order": 0,
+      "active": true
+    },
+    "story2": {
+      "title": "Features",
+      "message": "Discover powerful features:\n\n• Security Protection\n• Threat Detection\n• Data Encryption\n• Real-time Monitoring",
+      "icon": "star",
+      "backgroundColor": "#FF9800",
+      "order": 1,
+      "active": true
+    },
+    "story3": {
+      "title": "Tips",
+      "message": "Best Practices:\n\n• Keep your app updated\n• Use strong passwords\n• Enable all security features\n• Regular security checks",
+      "icon": "lightbulb",
+      "backgroundColor": "#FFC107",
+      "order": 2,
+      "active": true
+    },
+    "story4": {
+      "title": "Join Our Telegram",
+      "message": "Stay updated with the latest news, updates, and tips!\n\nJoin our Telegram channel for exclusive content and support.",
+      "icon": "telegram",
+      "backgroundColor": "#0088cc",
+      "order": 3,
+      "active": true,
+      "actionLabel": "Join Channel",
+      "actionIcon": "telegram",
+      "actionUrl": "https://t.me/+N5X_RGNw_FJkM2Q0"
+    }
+  }
+}
+
