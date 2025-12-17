@@ -237,23 +237,26 @@ class _HomeScreenState extends State<HomeScreen> {
         description = 'Tap the + button to upload your APK file for protection.';
         targetKey = widget.fabKey;
         LoggerService.d('HomeScreen', 'Tour step 2: Upload button (FAB)');
-        // Try to find FAB from Scaffold if key is not available
-        if (targetKey?.currentContext == null) {
-          // Wait a bit more and try to find Scaffold
-          await Future.delayed(const Duration(milliseconds: 300));
-          final scaffold = context.findAncestorWidgetOfExactType<Scaffold>();
-          if (scaffold != null && mounted) {
-            // FAB should be available now
-            LoggerService.d('HomeScreen', 'Scaffold found, waiting for FAB');
-          }
-        }
         break;
     }
 
     // Wait for widget to be fully rendered
-    // For FAB (step 2), wait longer as it might not be visible yet
-    int waitTime = _tourStep == 2 ? 500 : 200;
-    await Future.delayed(Duration(milliseconds: waitTime));
+    // For FAB (step 2), wait longer and ensure Scaffold is built
+    if (_tourStep == 2) {
+      // Wait for next frame to ensure Scaffold is built
+      await WidgetsBinding.instance.endOfFrame;
+      await Future.delayed(const Duration(milliseconds: 300));
+      
+      // Try to find Scaffold and ensure FAB is rendered
+      final scaffold = context.findAncestorWidgetOfExactType<Scaffold>();
+      if (scaffold != null && mounted) {
+        // Force a frame to ensure FAB is rendered
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+    } else {
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
+    
     if (!mounted) {
       _notifyTourState(false);
       return;
@@ -261,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Wait for target key to be available
     // For FAB, try more times and wait longer
-    int maxAttempts = _tourStep == 2 ? 30 : 20;
+    int maxAttempts = _tourStep == 2 ? 40 : 20;
     int waitInterval = _tourStep == 2 ? 150 : 100;
     int attempts = 0;
     
@@ -269,9 +272,11 @@ class _HomeScreenState extends State<HomeScreen> {
       await Future.delayed(Duration(milliseconds: waitInterval));
       attempts++;
       
-      // Force a rebuild to ensure FAB is rendered
+      // For FAB, try to access it through Navigator
       if (_tourStep == 2 && attempts % 5 == 0 && mounted) {
+        // Force a rebuild to ensure FAB is rendered
         setState(() {});
+        await Future.delayed(const Duration(milliseconds: 50));
       }
     }
     
